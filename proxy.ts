@@ -100,6 +100,7 @@ function isAllowed(pathname: string, role: string) {
 
 export const config = {
     matcher: [
+        "/",
         "/dashboard/:path*",
         "/sales/:path*",
         "/incentives/:path*",

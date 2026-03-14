@@ -16,7 +16,11 @@ export default function CreateUserForm() {
     role: Exclude<UserRole, "ADMIN">
   }
 
-  const form = useForm<CreateUserInput>()
+  const form = useForm<CreateUserInput>({
+    defaultValues: {
+      role: "SALES"
+    }
+  })
 
   const mutation = useMutation({
     mutationFn: createUser,
@@ -37,24 +41,25 @@ export default function CreateUserForm() {
       className="grid gap-4 md:grid-cols-2"
     >
 
-      <input autoComplete="off"
+      <input
+        autoComplete="off"
         placeholder="Full name"
-        {...form.register("name")}
+        {...form.register("name", { required: true })}
       />
 
       <input
         autoComplete="off"
         placeholder="Email address"
-        {...form.register("email")}
+        {...form.register("email", { required: true })}
       />
 
       <input
         type="password"
         placeholder="Password"
-        {...form.register("password")}
+        {...form.register("password", { required: true })}
       />
 
-      <select {...form.register("role")}>
+      <select {...form.register("role", { required: true })}>
         <option value="SALES">Sales</option>
         <option value="TEAM_LEAD">Team Lead</option>
         <option value="MANAGER">Manager</option>

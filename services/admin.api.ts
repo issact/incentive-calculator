@@ -12,6 +12,16 @@ export async function createUser(data: unknown): Promise<User> {
     })
 }
 
+export async function updateUser(
+    userId: string,
+    data: Partial<User>
+): Promise<User> {
+    return apiFetch<User>(`/admin/users/${userId}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+    })
+}
+
 export async function updateManager(
     userId: string,
     managerId: string
@@ -30,5 +40,12 @@ export async function createRule(data: unknown): Promise<IncentiveRule> {
     return apiFetch<IncentiveRule>("/admin/incentive-rules", {
         method: "POST",
         body: JSON.stringify(data)
+    })
+}
+
+
+export async function deleteUser(userId: string): Promise<{ success: boolean }> {
+    return apiFetch(`/admin/users/${userId}`, {
+        method: "DELETE"
     })
 }

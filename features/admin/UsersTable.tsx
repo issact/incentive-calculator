@@ -4,7 +4,10 @@ import { useQuery } from "@tanstack/react-query"
 import { getUsers } from "@/services/admin.api"
 import type { User } from "@/types/api.types"
 import DataTable from "@/components/ui/DataTable"
-import UpdateManagerSelect from "./UpdateManagerSelect"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { deleteUser } from "@/services/admin.api"
+import { useState } from "react"
+import EditUserModal from "./EditUserModal"
 
 function roleLabel(role: User["role"]) {
     switch (role) {
@@ -29,6 +32,19 @@ export default function UsersTable() {
         queryFn: getUsers,
     })
 
+    const [editingUser, setEditingUser] = useState<User | null>(null)
+
+
+    const qc = useQueryClient()
+
+
+    const deleteMutation = useMutation({
+        mutationFn: deleteUser,
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ["admin-users"] })
+        }
+    })
+
     if (isLoading) {
         return <div className="text-sm text-muted">Loading users...</div>
     }
@@ -37,60 +53,94 @@ export default function UsersTable() {
         return <div className="text-sm text-muted">No users found.</div>
     }
 
+
     return (
-        <DataTable
-            rows={data}
-            getRowKey={(row) => row.id}
-            columns={[
-                {
-                    header: "Name",
-                    cell: (row) => (
-                        <div>
-                            <div className="font-medium text-foreground">{row.name}</div>
-                            <div className="text-xs text-muted">{row.email}</div>
-                        </div>
-                    ),
-                },
-                {
-                    header: "Role",
-                    cell: (row) => (
-                        <span className="rounded bg-primary-soft px-2 py-1 text-xs font-medium text-primary">
-                            {roleLabel(row.role)}
-                        </span>
-                    ),
-                },
-                {
-                    header: "Status",
-                    cell: (row) =>
-                        row.isActive ? (
-                            <span className="rounded bg-success-soft px-2 py-1 text-xs font-medium text-success">
-                                Active
-                            </span>
-                        ) : (
-                            <span className="rounded bg-danger-soft px-2 py-1 text-xs font-medium text-danger">
-                                Inactive
+        <>
+            <DataTable
+                rows={data}
+                getRowKey={(row) => row.id}
+                columns={[
+                    {
+                        header: "Name",
+                        cell: (row) => (
+                            <div>
+                                <div className="font-medium text-foreground">{row.name}</div>
+                                <div className="text-xs text-muted">{row.email}</div>
+                            </div>
+                        ),
+                    },
+                    {
+                        header: "Role",
+                        cell: (row) => (
+                            <span className="rounded bg-primary-soft px-2 py-1 text-xs font-medium text-primary">
+                                {roleLabel(row.role)}
                             </span>
                         ),
-                },
-                {
-                    header: "Manager",
-                    cell: (row) => (
-                        <UpdateManagerSelect
-                            userId={row.id}
-                            currentManagerId={row.managerId}
-                            users={data}
-                        />
-                    ),
-                },
-                {
-                    header: "Created",
-                    cell: (row) => new Date(row.createdAt).toLocaleDateString(),
-                },
-                {
-                    header: "Updated",
-                    cell: (row) => new Date(row.updatedAt).toLocaleDateString(),
-                },
-            ]}
-        />
+                    },
+                    {
+                        header: "Status",
+                        cell: (row) =>
+                            row.isActive ? (
+                                <span className="rounded bg-success-soft px-2 py-1 text-xs font-medium text-success">
+                                    Active
+                                </span>
+                            ) : (
+                                <span className="rounded bg-danger-soft px-2 py-1 text-xs font-medium text-danger">
+                                    Inactive
+                                </span>
+                            ),
+                    },
+                    {
+                        header: "Manager",
+                        cell: (row) => {
+                            const manager = data.find((u) => u.id === row.managerId)
+                            return manager ? manager.name : "Not Assigned"
+                        }
+                    },
+                    {
+                        header: "Actions",
+                        cell: (row) => (
+                            <div className="flex gap-2">
+                                {row.isActive ? (
+                                    <>
+                                        <button
+                                            onClick={() => setEditingUser(row)}
+                                            className="rounded bg-primary-soft px-2 py-1 text-xs font-medium text-primary"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (confirm("Deactivate this user?")) {
+                                                    deleteMutation.mutate(row.id)
+                                                }
+                                            }}
+                                            className="rounded bg-danger-soft px-2 py-1 text-xs font-medium text-danger"
+                                        >
+                                            Deactivate
+                                        </button>
+                                    </>
+                                ) : "Disabled"}
+                            </div>
+                        ),
+                    },
+                    {
+                        header: "Created",
+                        cell: (row) => new Date(row.createdAt).toLocaleDateString(),
+                    },
+                    {
+                        header: "Updated",
+                        cell: (row) => new Date(row.updatedAt).toLocaleDateString(),
+                    },
+                ]}
+            />
+            {editingUser && (
+                <EditUserModal
+                    user={editingUser}
+                    users={data}
+                    onClose={() => setEditingUser(null)}
+                />
+            )}
+        </>
     )
 }
