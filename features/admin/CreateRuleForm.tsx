@@ -17,7 +17,12 @@ export default function CreateRuleForm() {
         name?: string;
     }
 
-    const form = useForm<CreateRuleInput>({
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset
+    } = useForm<CreateRuleInput>({
         defaultValues: {
             level: "L1",
             ratePercent: 0
@@ -28,7 +33,7 @@ export default function CreateRuleForm() {
         mutationFn: createRule,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["rules"] })
-            form.reset()
+            reset()
         }
     })
 
@@ -39,16 +44,21 @@ export default function CreateRuleForm() {
     return (
 
         <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit)}
             className="grid gap-4 md:grid-cols-3"
         >
+            {mutation.isError && (
+                <div className="md:col-span-3 rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
+                    {(mutation.error as Error).message || "Failed to create rule"}
+                </div>
+            )}
 
             <div className="flex flex-col gap-1">
                 <label htmlFor="level" className="text-xs font-medium text-muted">
                     Level
                 </label>
 
-                <select id="level" {...form.register("level")}>
+                <select id="level" {...register("level")}>
                     <option value="L1">L1</option>
                     <option value="L2">L2</option>
                     <option value="L3">L3</option>
@@ -64,7 +74,7 @@ export default function CreateRuleForm() {
                 <input
                     id="name"
                     placeholder={`example rule`}
-                    {...form.register("name")}
+                    {...register("name")}
                 />
             </div>
 
@@ -79,8 +89,19 @@ export default function CreateRuleForm() {
                     step="0.01"
                     min="0"
                     placeholder="e.g. 12.5"
-                    {...form.register("ratePercent", { valueAsNumber: true })}
+                    {...register("ratePercent", {
+                        required: true,
+                        valueAsNumber: true,
+                        min: 0.01,
+                        max: 100
+                    })}
                 />
+
+                {errors.ratePercent && (
+                    <span className="text-xs text-danger">
+                        Rate must be between 0.01 and 100
+                    </span>
+                )}
             </div>
 
 
@@ -92,9 +113,15 @@ export default function CreateRuleForm() {
                 <input
                     id="effectiveFrom"
                     type="date"
-                    {...form.register("effectiveFrom")}
+                    {...register("effectiveFrom", { required: true })}
                 />
                 <span className="absolute right-3 bottom-3 text-muted pointer-events-none cursor-pointer"><Calendar size={18} /></span>
+
+                {errors.effectiveFrom && (
+                    <span className="text-xs text-danger absolute -bottom-6 left-2">
+                        Effective date is required
+                    </span>
+                )}
             </div>
 
 

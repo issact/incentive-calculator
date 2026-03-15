@@ -76,6 +76,7 @@ export type IncentiveDetail = {
 
 export type IncentiveRule = {
     id: string
+    version: number
     level: IncentiveLevel
     name: string
     ratePercent: number
@@ -93,4 +94,11 @@ export type Pagination = {
 export type PaginationResponse<T> = {
     data: T[]
     pagination: Pagination
+}
+
+export type CreateRuleInput = {
+    level: IncentiveLevel
+    ratePercent: number
+    effectiveFrom: string
+    name?: string
 }
