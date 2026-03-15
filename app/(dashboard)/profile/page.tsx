@@ -57,8 +57,8 @@ export default async function ProfilePage() {
                     />
 
                     <ProfileField
-                        label="Manager ID"
-                        value={user.managerId ?? "—"}
+                        label="Manager"
+                        value={user.manager?.name ?? "—"}
                     />
 
                     <ProfileField

@@ -11,6 +11,11 @@ export type User = {
     email: string
     role: UserRole
     managerId?: string | null
+    manager: {
+        id: string;
+        name: string;
+        email: string;
+    }
     isActive: boolean
     createdAt: Date
     updatedAt: Date
