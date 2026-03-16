@@ -15,7 +15,7 @@ export default async function ReportsPage({
 
   return (
 
-    <div>
+    <div className="space-y-6 max-w-7xl mx-auto p-2">
 
       <h1 className="text-xl font-semibold mb-6">
         Incentive Reports

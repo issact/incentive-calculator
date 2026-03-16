@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
     return (
 
-        <div className="space-y-8">
+        <div className="space-y-6 max-w-7xl mx-auto p-2">
 
             <header>
 

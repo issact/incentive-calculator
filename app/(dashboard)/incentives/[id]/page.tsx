@@ -21,7 +21,7 @@ export default async function IncentiveDetailPage({
 
   return (
 
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto p-2">
 
       <div className="flex items-center justify-between">
 

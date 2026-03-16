@@ -19,7 +19,7 @@ export default function IncentiveFilters() {
     const [search, setSearch] = useState(searchParams.get("search") ?? "")
 
     function resetFilters() {
-        router.push("/incentives/my")
+        router.push(window.location.pathname)
     }
 
     return (
@@ -32,7 +32,7 @@ export default function IncentiveFilters() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search project or customer..."
-                className="w-64 rounded-md border border-border bg-background px-3 py-2 text-sm"
+                className="w-64 rounded-md border border-border bg-surface px-3 py-2 text-sm focus:ring-2 focus:ring-ring"
             />
 
 
@@ -51,7 +51,7 @@ export default function IncentiveFilters() {
 
                     params.set("page", "1")
 
-                    router.push(`/incentives/my?${params.toString()}`)
+                    router.push(`${window.location.pathname}?${params.toString()}`)
                 }}
             >
                 {statuses.map(s => (

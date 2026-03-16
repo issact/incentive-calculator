@@ -4,10 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   approveIncentive,
   claimIncentive,
+  holdIncentive,
   markPaid,
   reopenIncentive
 } from "@/services/incentives.api"
 import type { IncentiveDetail, User } from "@/types/api.types"
+import { useState } from "react"
+import HoldModal from "./HoldModal"
 
 export default function IncentiveActions({
   incentive,
@@ -16,6 +19,7 @@ export default function IncentiveActions({
   incentive: IncentiveDetail
   user: User | undefined
 }) {
+  const [holdOpen, setHoldOpen] = useState(false)
 
   const qc = useQueryClient()
 
@@ -32,6 +36,11 @@ export default function IncentiveActions({
 
   const approve = useMutation({
     mutationFn: () => approveIncentive(incentive.id),
+    onSuccess: invalidateIncentives
+  })
+
+  const hold = useMutation({
+    mutationFn: (reason: string) => holdIncentive(incentive.id, reason),
     onSuccess: invalidateIncentives
   })
 
@@ -53,6 +62,9 @@ export default function IncentiveActions({
   const canApprove =
     isReviewer && incentive.status === "PENDING_REVIEW"
 
+  const canHold =
+    isReviewer && incentive.status === "PENDING_REVIEW"
+
   const canReopen =
     isReviewer && incentive.status === "ON_HOLD"
 
@@ -65,7 +77,7 @@ export default function IncentiveActions({
     incentive.status !== "PAID"
 
   const hasActions =
-    canApprove || canReopen || canClaim || canPay
+    canApprove || canHold || canReopen || canClaim || canPay
 
   if (!hasActions) {
 
@@ -88,11 +100,11 @@ export default function IncentiveActions({
 
   return (
 
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3 mt-2">
 
       {canApprove && (
         <button
-          className="bg-success text-white border-success hover:opacity-90"
+          className="bg-success text-white border-success hover:opacity-90 cursor-pointer"
           disabled={approve.isPending}
           onClick={() => approve.mutate()}
         >
@@ -100,9 +112,19 @@ export default function IncentiveActions({
         </button>
       )}
 
+      {canHold && (
+        <button
+          className="bg-warning text-white border-warning hover:opacity-90 cursor-pointer"
+          disabled={hold.isPending}
+          onClick={() => setHoldOpen(true)}
+        >
+          {hold.isPending ? "Holding..." : "Put On Hold"}
+        </button>
+      )}
+
       {canReopen && (
         <button
-          className="bg-warning text-white border-warning hover:opacity-90"
+          className="bg-warning text-white border-warning hover:opacity-90 cursor-pointer"
           disabled={reopen.isPending}
           onClick={() => reopen.mutate()}
         >
@@ -112,7 +134,7 @@ export default function IncentiveActions({
 
       {canClaim && (
         <button
-          className="bg-primary text-white border-primary hover:bg-primary-hover"
+          className="bg-primary text-white border-primary hover:bg-primary-hover cursor-pointer"
           disabled={claim.isPending}
           onClick={() => claim.mutate()}
         >
@@ -122,7 +144,7 @@ export default function IncentiveActions({
 
       {canPay && (
         <button
-          className="bg-accent text-white border-accent hover:opacity-90"
+          className="bg-accent text-white border-accent hover:opacity-90 cursor-pointer"
           disabled={pay.isPending}
           onClick={() => pay.mutate()}
         >
@@ -130,6 +152,16 @@ export default function IncentiveActions({
         </button>
       )}
 
+
+      <HoldModal
+        open={holdOpen}
+        loading={hold.isPending}
+        onClose={() => setHoldOpen(false)}
+        onSubmit={(reason) => {
+          hold.mutate(reason)
+          setHoldOpen(false)
+        }}
+      />
     </div>
   )
 }
