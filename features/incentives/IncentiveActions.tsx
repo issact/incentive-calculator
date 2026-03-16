@@ -7,11 +7,21 @@ import {
   markPaid,
   reopenIncentive
 } from "@/services/incentives.api"
-import type { IncentiveDetail } from "@/types/api.types"
+import type { IncentiveDetail, User } from "@/types/api.types"
 
-export default function IncentiveActions({ incentive }: { incentive: IncentiveDetail }) {
+export default function IncentiveActions({
+  incentive,
+  user
+}: {
+  incentive: IncentiveDetail
+  user: User | undefined
+}) {
 
   const qc = useQueryClient()
+
+  const isBeneficiary = user?.id === incentive.beneficiaryUserId
+  const isReviewer = user?.id === incentive.reviewerUserId
+  const isFinance = user?.role === "OWNER_FINANCE"
 
   function invalidateIncentives() {
     qc.invalidateQueries({ queryKey: ["my-incentives"] })
@@ -20,51 +30,103 @@ export default function IncentiveActions({ incentive }: { incentive: IncentiveDe
     qc.invalidateQueries({ queryKey: ["incentive-detail", incentive.id] })
   }
 
-  const approve = useMutation<IncentiveDetail>({
+  const approve = useMutation({
     mutationFn: () => approveIncentive(incentive.id),
     onSuccess: invalidateIncentives
   })
 
-  const claim = useMutation<IncentiveDetail>({
+  const claim = useMutation({
     mutationFn: () => claimIncentive(incentive.id),
     onSuccess: invalidateIncentives
   })
 
-  const reopen = useMutation<IncentiveDetail>({
+  const reopen = useMutation({
     mutationFn: () => reopenIncentive(incentive.id),
     onSuccess: invalidateIncentives
   })
 
-  const pay = useMutation<IncentiveDetail>({
+  const pay = useMutation({
     mutationFn: () => markPaid(incentive.id),
     onSuccess: invalidateIncentives
   })
 
+  const canApprove =
+    isReviewer && incentive.status === "PENDING_REVIEW"
+
+  const canReopen =
+    isReviewer && incentive.status === "ON_HOLD"
+
+  const canClaim =
+    isBeneficiary && incentive.status === "CLAIMABLE"
+
+  const canPay =
+    isFinance &&
+    incentive.claimRequestedAt &&
+    incentive.status !== "PAID"
+
+  const hasActions =
+    canApprove || canReopen || canClaim || canPay
+
+  if (!hasActions) {
+
+    let message = "No actions available."
+
+    if (incentive.status === "PAID") {
+      message = "This incentive has already been paid."
+    } else if (incentive.status === "PENDING_REVIEW") {
+      message = "Waiting for the assigned reviewer to approve."
+    } else if (incentive.status === "CLAIMABLE") {
+      message = "Waiting for the beneficiary to claim the incentive."
+    }
+
+    return (
+      <div className="text-sm text-muted">
+        {message}
+      </div>
+    )
+  }
+
   return (
 
-    <div className="flex gap-3">
+    <div className="flex flex-wrap gap-3">
 
-      {incentive.status === "PENDING_REVIEW" && (
-        <button onClick={() => approve.mutate()}>
-          Approve
+      {canApprove && (
+        <button
+          className="bg-success text-white border-success hover:opacity-90"
+          disabled={approve.isPending}
+          onClick={() => approve.mutate()}
+        >
+          {approve.isPending ? "Approving..." : "Approve"}
         </button>
       )}
 
-      {incentive.status === "ON_HOLD" && (
-        <button onClick={() => reopen.mutate()}>
-          Reopen
+      {canReopen && (
+        <button
+          className="bg-warning text-white border-warning hover:opacity-90"
+          disabled={reopen.isPending}
+          onClick={() => reopen.mutate()}
+        >
+          {reopen.isPending ? "Reopening..." : "Reopen"}
         </button>
       )}
 
-      {incentive.status === "CLAIMABLE" && (
-        <button onClick={() => claim.mutate()}>
-          Claim
+      {canClaim && (
+        <button
+          className="bg-primary text-white border-primary hover:bg-primary-hover"
+          disabled={claim.isPending}
+          onClick={() => claim.mutate()}
+        >
+          {claim.isPending ? "Claiming..." : "Claim Incentive"}
         </button>
       )}
 
-      {incentive.claimRequestedAt && incentive.status !== "PAID" && (
-        <button onClick={() => pay.mutate()}>
-          Mark Paid
+      {canPay && (
+        <button
+          className="bg-accent text-white border-accent hover:opacity-90"
+          disabled={pay.isPending}
+          onClick={() => pay.mutate()}
+        >
+          {pay.isPending ? "Processing..." : "Mark Paid"}
         </button>
       )}
 

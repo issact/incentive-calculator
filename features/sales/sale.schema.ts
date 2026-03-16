@@ -2,11 +2,27 @@ import { z } from "zod"
 
 export const saleSchema = z.object({
 
-  saleCode: z.string().min(1),
+  saleCode: z
+    .string()
+    .min(3, "Sale code must be at least 3 characters")
+    .max(50),
 
-  saleDate: z.string(),
+  saleDate: z
+    .string()
+    .min(1, "Sale date is required"),
 
-  projectName: z.string(),
+  bookingDate: z
+    .string()
+    .optional(),
+
+  closeDate: z
+    .string()
+    .optional(),
+
+  projectName: z
+    .string()
+    .min(2, "Project name is required")
+    .max(120),
 
   propertyType: z.enum([
     "APARTMENT",
@@ -15,23 +31,47 @@ export const saleSchema = z.object({
     "COMMERCIAL"
   ]),
 
-  city: z.string(),
+  unitNumber: z
+    .string()
+    .max(50)
+    .optional(),
 
-  state: z.string(),
+  city: z
+    .string()
+    .min(2, "City is required"),
 
-  saleValue: z.coerce.number(),
+  state: z
+    .string()
+    .min(2, "State is required"),
 
-  customerName: z.string(),
+  saleValue: z
+    .coerce
+    .number()
+    .positive("Sale value must be greater than 0")
+    .max(10_000_000_000),
 
-  customerPhone: z.string().optional(),
+  customerName: z
+    .string()
+    .min(2, "Customer name required")
+    .max(120),
 
-  brokerChannel: z.enum([
-    "DIRECT",
-    "PARTNER",
-    "BROKER"
-  ]).optional(),
+  customerPhone: z
+    .string()
+    .regex(/^[0-9+\-\s]{8,15}$/, "Invalid phone number")
+    .optional(),
 
-  notes: z.string().optional()
+  brokerChannel: z
+    .enum([
+      "DIRECT",
+      "PARTNER",
+      "BROKER"
+    ])
+    .optional(),
+
+  notes: z
+    .string()
+    .max(1000)
+    .optional()
 
 })
 

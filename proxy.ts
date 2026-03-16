@@ -54,6 +54,7 @@ function isAllowed(pathname: string, role: string) {
         SALES: [
             "/dashboard",
             "/sales/new",
+            "/incentives",
             "/incentives/my",
             "/reports/incentives",
             "/profile"
@@ -61,6 +62,7 @@ function isAllowed(pathname: string, role: string) {
 
         TEAM_LEAD: [
             "/dashboard",
+            "/incentives",
             "/incentives/my",
             "/incentives/review",
             "/reports/incentives",
@@ -69,6 +71,7 @@ function isAllowed(pathname: string, role: string) {
 
         MANAGER: [
             "/dashboard",
+            "/incentives",
             "/incentives/my",
             "/incentives/review",
             "/reports/incentives",
@@ -77,6 +80,7 @@ function isAllowed(pathname: string, role: string) {
 
         OWNER_FINANCE: [
             "/dashboard",
+            "/incentives",
             "/incentives/my",
             "/incentives/review",
             "/reports/incentives",

@@ -7,3 +7,11 @@ export async function getIncentiveReportsServer(
   return apiFetchServer<PaginationResponse<Incentive>>(`/reports/incentives${query}`)
 }
 
+export async function getDashboardStatsServer() {
+  return apiFetchServer<{
+    totalEarned: number
+    claimable: number
+    pendingReview: number
+    paid: number
+  }>("/reports/dashboard/stats")
+}

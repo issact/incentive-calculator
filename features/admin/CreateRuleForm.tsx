@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form"
 import { createRule } from "@/services/admin.api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import type { IncentiveLevel } from "@/types/api.types"
-import { Calendar } from "lucide-react"
 
 export default function CreateRuleForm() {
 
@@ -13,7 +12,6 @@ export default function CreateRuleForm() {
     type CreateRuleInput = {
         level: IncentiveLevel
         ratePercent: number
-        effectiveFrom: string
         name?: string;
     }
 
@@ -103,27 +101,6 @@ export default function CreateRuleForm() {
                     </span>
                 )}
             </div>
-
-
-            <div className="flex flex-col gap-1 relative">
-                <label htmlFor="effectiveFrom" className="text-xs font-medium text-muted">
-                    Effective From
-                </label>
-
-                <input
-                    id="effectiveFrom"
-                    type="date"
-                    {...register("effectiveFrom", { required: true })}
-                />
-                <span className="absolute right-3 bottom-3 text-muted pointer-events-none cursor-pointer"><Calendar size={18} /></span>
-
-                {errors.effectiveFrom && (
-                    <span className="text-xs text-danger absolute -bottom-6 left-2">
-                        Effective date is required
-                    </span>
-                )}
-            </div>
-
 
             <div className="md:col-span-3 flex justify-end">
                 <button

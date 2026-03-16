@@ -1,0 +1,11 @@
+
+
+export function formatCurrency(value: string | number) {
+  const num = typeof value === "string" ? Number(value) : value
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+  }).format(num)
+}

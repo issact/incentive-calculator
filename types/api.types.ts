@@ -11,14 +11,14 @@ export type User = {
     email: string
     role: UserRole
     managerId?: string | null
-    manager: {
-        id: string;
-        name: string;
-        email: string;
-    }
+    manager?: {
+        id: string
+        name: string
+        email: string
+    } | null
     isActive: boolean
-    createdAt: Date
-    updatedAt: Date
+    createdAt: string
+    updatedAt: string
 }
 
 export type IncentiveStatus =
@@ -50,9 +50,19 @@ export type Sale = {
 
 export type IncentiveEvent = {
     id: string
-    actorUser: Pick<User, "id" | "name">
+    actorUser: Pick<User, "id" | "name" | "role">
     toStatus: IncentiveStatus
     createdAt: string
+
+    reason?: string | null
+
+    metadata?: {
+        type?: "INCENTIVE_CREATED" | "CLAIM_REQUESTED" | "APPROVED"
+        performanceScores?: Record<string, number> | null
+        multiplier?: number
+        adjustedAmount?: number
+        manualOverride?: number | null
+    } | null
 }
 
 export type Incentive = {
@@ -65,7 +75,12 @@ export type Incentive = {
     finalAmount: string | number
     createdAt: string
     claimRequestedAt?: string | null
-    sale: Pick<Sale, "id" | "projectName" | "customerName">
+
+    sale: Pick<
+        Sale,
+        "id" | "projectName" | "customerName" | "city" | "state"
+    >
+
     beneficiaryUser: Pick<User, "id" | "name" | "email" | "role">
 }
 
@@ -73,8 +88,20 @@ export type IncentiveDetail = {
     id: string
     level: IncentiveLevel
     status: IncentiveStatus
+
+    beneficiaryUserId: string
+    reviewerUserId: string
+
+    rulePercent: number
+    baseAmount: string | number
+    scoreMultiplier?: number
+    adjustedAmount?: string | number
+    manualOverrideAmount?: string | number
+
     finalAmount: string | number
+
     claimRequestedAt?: string | null
+
     sale: Sale
     events: IncentiveEvent[]
 }
@@ -104,6 +131,5 @@ export type PaginationResponse<T> = {
 export type CreateRuleInput = {
     level: IncentiveLevel
     ratePercent: number
-    effectiveFrom: string
     name?: string
 }

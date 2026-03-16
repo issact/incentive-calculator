@@ -23,7 +23,7 @@ export const navigation: NavItem[] = [
     {
         label: "My Incentives",
         href: "/incentives/my",
-        roles: ["SALES"]
+        roles: ["SALES", "TEAM_LEAD", "MANAGER", "OWNER_FINANCE"]
     },
 
     {

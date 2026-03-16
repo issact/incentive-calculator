@@ -5,11 +5,15 @@ import { getMyIncentives } from "@/services/incentives.api"
 import { buildQuery } from "@/hooks/usePagination"
 import type { Incentive, PaginationResponse } from "@/types/api.types"
 import DataTable from "@/components/ui/DataTable"
+import StatusBadge from "@/components/ui/StatusBadge"
+import { formatCurrency } from "@/lib/format"
+import Link from "next/link"
 
 type IncentiveTableQueryParams = {
   page: number
   limit: number
   search?: string
+  status?: string
 }
 
 export default function IncentiveTable({
@@ -26,7 +30,11 @@ export default function IncentiveTable({
   })
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <div className="py-10 text-center text-muted">
+        Loading incentives...
+      </div>
+    )
   }
 
   if (!data) {
@@ -34,16 +42,64 @@ export default function IncentiveTable({
   }
 
   return (
-    <DataTable
-      rows={data.data}
-      getRowKey={(row) => row.id}
-      columns={[
-        { header: "Project", cell: (row) => row.sale.projectName },
-        { header: "Customer", cell: (row) => row.sale.customerName },
-        { header: "Amount", cell: (row) => row.finalAmount },
-        { header: "Status", cell: (row) => row.status },
-      ]}
-    />
+    <div className="overflow-x-auto">
+      <DataTable
+        rows={data.data}
+        getRowKey={(row) => row.id}
+        columns={[
+          {
+            header: "Project",
+            cell: (row) => (
+              <div className="flex flex-col">
+                <span className="font-medium">
+                  {row.sale.projectName}
+                </span>
 
+                <span className="text-xs text-muted">
+                  {row.sale.city}, {row.sale.state}
+                </span>
+              </div>
+            )
+          },
+
+          {
+            header: "Customer",
+            cell: (row) => (
+              <div className="text-sm">
+                {row.sale.customerName}
+              </div>
+            )
+          },
+
+          {
+            header: "Incentive",
+            cell: (row) => (
+              <span className="font-medium text-primary">
+                {formatCurrency(row.finalAmount)}
+              </span>
+            )
+          },
+
+          {
+            header: "Status",
+            cell: (row) => (
+              <StatusBadge status={row.status} />
+            )
+          },
+
+          {
+            header: "",
+            cell: (row) => (
+              <Link
+                href={`/incentives/${row.id}`}
+                className="text-sm font-medium text-primary hover:text-primary-hover"
+              >
+                View
+              </Link>
+            )
+          }
+        ]}
+      />
+    </div>
   )
 }

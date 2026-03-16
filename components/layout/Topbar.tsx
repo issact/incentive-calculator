@@ -10,7 +10,7 @@ export default async function Topbar() {
         <header className="flex h-14 items-center justify-between border-b border-border bg-surface px-6">
 
             <div className="font-medium text-foreground">
-                {session?.user.role}
+                {session?.user.role.replaceAll("_", " ")}
             </div>
 
             <LogoutButton />

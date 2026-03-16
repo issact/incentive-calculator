@@ -1,35 +1,72 @@
-import type { IncentiveEvent } from "@/types/api.types"
+import type { IncentiveEvent, IncentiveStatus } from "@/types/api.types"
 
 export default function EventTimeline({ events }: { events: IncentiveEvent[] }) {
 
+  if (!events.length) {
+    return (
+      <p className="text-sm text-muted">
+        No activity recorded yet.
+      </p>
+    )
+  }
+
+  const statusColor: Record<IncentiveStatus, string> = {
+    PENDING_REVIEW: "bg-warning",
+    CLAIMABLE: "bg-success",
+    ON_HOLD: "bg-danger",
+    PAID: "bg-accent"
+  }
+
+  function getEventMessage(event: IncentiveEvent) {
+
+    const type = event.metadata?.type
+
+    if (type === "INCENTIVE_CREATED") {
+      return "Incentive generated"
+    }
+
+    if (type === "CLAIM_REQUESTED") {
+      return `${event.actorUser.name} requested payout`
+    }
+
+    return `${event.actorUser.name} → ${event.toStatus.replaceAll("_", " ")}`
+  }
+
   return (
 
-    <div className="border p-4">
+    <ul className="relative space-y-6">
 
-      <h2 className="mb-4 font-semibold">
-        Timeline
-      </h2>
+      {events.map((event, i) => (
 
-      <ul className="space-y-3">
+        <li key={event.id} className="relative pl-6">
 
-        {events.map((event) => (
+          {i !== events.length - 1 && (
+            <span className="absolute left-0.75 top-3 h-full w-px bg-border" />
+          )}
 
-          <li key={event.id}>
+          <span
+            className={`absolute left-0 top-2 h-2 w-2 rounded-full ${statusColor[event.toStatus]}`}
+          />
 
-            <p>
-              {event.actorUser.name} → {event.toStatus}
+          <div className="flex flex-col gap-1">
+
+            <p className="text-sm">
+              {getEventMessage(event)}
             </p>
 
-            <p className="text-sm text-gray-500">
-              {new Date(event.createdAt).toLocaleString()}
+            <p className="text-xs text-muted">
+              {new Date(event.createdAt).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short"
+              })}
             </p>
 
-          </li>
+          </div>
 
-        ))}
+        </li>
 
-      </ul>
+      ))}
 
-    </div>
+    </ul>
   )
 }
