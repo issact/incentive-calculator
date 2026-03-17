@@ -11,6 +11,8 @@ import {
 import type { IncentiveDetail, User } from "@/types/api.types"
 import { useState } from "react"
 import HoldModal from "./HoldModal"
+import ApproveModal from "./ApproveModal"
+import { useRouter } from "next/navigation"
 
 export default function IncentiveActions({
   incentive,
@@ -19,9 +21,11 @@ export default function IncentiveActions({
   incentive: IncentiveDetail
   user: User | undefined
 }) {
+  const [approveOpen, setApproveOpen] = useState(false)
   const [holdOpen, setHoldOpen] = useState(false)
 
   const qc = useQueryClient()
+  const router = useRouter()
 
   const isBeneficiary = user?.id === incentive.beneficiaryUserId
   const isReviewer = user?.id === incentive.reviewerUserId
@@ -35,8 +39,15 @@ export default function IncentiveActions({
   }
 
   const approve = useMutation({
-    mutationFn: () => approveIncentive(incentive.id),
-    onSuccess: invalidateIncentives
+    mutationFn: (data: {
+      performanceScores: Record<string, number>
+      manualOverrideAmount?: number
+      reason?: string
+    }) => approveIncentive(incentive.id, data),
+    onSuccess: () => {
+      invalidateIncentives()
+      router.refresh()
+    }
   })
 
   const hold = useMutation({
@@ -46,7 +57,10 @@ export default function IncentiveActions({
 
   const claim = useMutation({
     mutationFn: () => claimIncentive(incentive.id),
-    onSuccess: invalidateIncentives
+    onSuccess: () => {
+      invalidateIncentives()
+      router.refresh()
+    }
   })
 
   const reopen = useMutation({
@@ -73,8 +87,7 @@ export default function IncentiveActions({
 
   const canPay =
     isFinance &&
-    incentive.claimRequestedAt &&
-    incentive.status !== "PAID"
+    incentive.status === "CLAIM_REQUESTED"
 
   const hasActions =
     canApprove || canHold || canReopen || canClaim || canPay
@@ -105,10 +118,9 @@ export default function IncentiveActions({
       {canApprove && (
         <button
           className="bg-success text-white border-success hover:opacity-90 cursor-pointer"
-          disabled={approve.isPending}
-          onClick={() => approve.mutate()}
+          onClick={() => setApproveOpen(true)}
         >
-          {approve.isPending ? "Approving..." : "Approve"}
+          Approve
         </button>
       )}
 
@@ -152,6 +164,16 @@ export default function IncentiveActions({
         </button>
       )}
 
+      <ApproveModal
+        open={approveOpen}
+        loading={approve.isPending}
+        onClose={() => setApproveOpen(false)}
+        onSubmit={(data) => {
+          approve.mutate(data)
+          setApproveOpen(false)
+        }}
+        baseAmount={Number(incentive.baseAmount)}
+      />
 
       <HoldModal
         open={holdOpen}

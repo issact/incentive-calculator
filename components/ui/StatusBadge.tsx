@@ -10,6 +10,7 @@ export default function StatusBadge({ status }: Props) {
     PENDING_REVIEW: "bg-warning-soft text-warning",
     ON_HOLD: "bg-danger-soft text-danger",
     CLAIMABLE: "bg-success-soft text-success",
+    CLAIM_REQUESTED: "bg-success-soft text-success",
     PAID: "bg-accent-soft text-accent"
   }
 

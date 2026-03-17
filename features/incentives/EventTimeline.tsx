@@ -1,7 +1,6 @@
 import type { IncentiveEvent, IncentiveStatus } from "@/types/api.types"
 
 export default function EventTimeline({ events }: { events: IncentiveEvent[] }) {
-
   if (!events.length) {
     return (
       <p className="text-sm text-muted">
@@ -13,6 +12,7 @@ export default function EventTimeline({ events }: { events: IncentiveEvent[] }) 
   const statusColor: Record<IncentiveStatus, string> = {
     PENDING_REVIEW: "bg-warning",
     CLAIMABLE: "bg-success",
+    CLAIM_REQUESTED: "bg-blue-400/50",
     ON_HOLD: "bg-danger",
     PAID: "bg-accent"
   }
@@ -29,7 +29,7 @@ export default function EventTimeline({ events }: { events: IncentiveEvent[] }) 
       return `${event.actorUser.name} requested payout`
     }
 
-    return `${event.actorUser.name} → ${event.toStatus.replaceAll("_", " ")}`
+    return event.reason
   }
 
   return (

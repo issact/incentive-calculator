@@ -25,6 +25,7 @@ export type IncentiveStatus =
     | "PENDING_REVIEW"
     | "ON_HOLD"
     | "CLAIMABLE"
+    | "CLAIM_REQUESTED"
     | "PAID"
 
 export type IncentiveLevel =
@@ -90,13 +91,24 @@ export type IncentiveDetail = {
     status: IncentiveStatus
 
     beneficiaryUserId: string
+    beneficiaryUser: {
+        id: string;
+        name: string;
+        role: UserRole;
+    };
     reviewerUserId: string
+    reviewerUser: {
+        id: string;
+        name: string;
+        role: UserRole;
+    };
 
     rulePercent: number
     baseAmount: string | number
     scoreMultiplier?: number
     adjustedAmount?: string | number
     manualOverrideAmount?: string | number
+    manualOverrideReason?: string
 
     finalAmount: string | number
 

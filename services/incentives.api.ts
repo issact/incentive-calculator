@@ -21,8 +21,18 @@ export async function getIncentiveDetails(id: string): Promise<IncentiveDetail> 
     return apiFetch<IncentiveDetail>(`/incentives/${id}`)
 }
 
-export async function approveIncentive(id: string) {
-    return apiFetch<IncentiveDetail>(`/incentives/${id}/approve`, { method: "POST" })
+export async function approveIncentive(
+    id: string,
+    payload: {
+        performanceScores?: Record<string, number>
+        manualOverrideAmount?: number
+        reason?: string
+    }
+) {
+    return apiFetch<IncentiveDetail>(`/incentives/${id}/approve`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+    })
 }
 
 export async function holdIncentive(id: string, reason: string) {

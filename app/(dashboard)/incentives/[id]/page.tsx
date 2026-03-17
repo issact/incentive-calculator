@@ -5,6 +5,7 @@ import IncentiveActions from "@/features/incentives/IncentiveActions"
 import EventTimeline from "@/features/incentives/EventTimeline"
 import { getSession } from "@/lib/getSession"
 import IncentiveBreakdown from "@/features/incentives/IncentiveBreakdown"
+import SaleNote from "@/features/incentives/SaleNote"
 
 export default async function IncentiveDetailPage({
   params,
@@ -17,7 +18,7 @@ export default async function IncentiveDetailPage({
 
   const session = await getSession()
   const user = session?.user
-  
+
 
   return (
 
@@ -70,8 +71,13 @@ export default async function IncentiveDetailPage({
           </div>
 
           <div>
-            <p className="text-xs text-muted uppercase tracking-wide">Level</p>
-            <p className="font-medium">{incentive.level}</p>
+            <p className="text-xs text-muted uppercase tracking-wide">Beneficiary User</p>
+            <p className="font-medium">{incentive.beneficiaryUser.name}</p>
+          </div>
+
+          <div>
+            <p className="text-xs text-muted uppercase tracking-wide">Beneficiary User Role</p>
+            <p className="font-medium">{incentive.beneficiaryUser.role}</p>
           </div>
 
           <div>
@@ -93,6 +99,17 @@ export default async function IncentiveDetailPage({
         </div>
 
       </div>
+
+      {/* notes */}
+      {incentive?.sale?.notes && (
+        <div className="rounded-lg border border-border bg-surface p-4">
+          <h2 className="text-sm font-semibold text-muted">
+            Sale Note
+          </h2>
+
+          <SaleNote note={incentive.sale.notes} />
+        </div>
+      )}
 
       {/* Breakdown */}
 

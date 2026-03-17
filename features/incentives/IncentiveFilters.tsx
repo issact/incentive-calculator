@@ -7,6 +7,7 @@ const statuses = [
     { label: "All Status", value: "" },
     { label: "Pending Review", value: "PENDING_REVIEW" },
     { label: "Claimable", value: "CLAIMABLE" },
+    { label: "Claim Requested", value: "CLAIM_REQUESTED" },
     { label: "On Hold", value: "ON_HOLD" },
     { label: "Paid", value: "PAID" }
 ]

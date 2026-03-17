@@ -51,6 +51,13 @@ export default function IncentiveBreakdown({
                     />
                 )}
 
+                {incentive.manualOverrideReason && (
+                    <div className="flex flex-col justify-between">
+                        <span className="text-muted">Override Reason:</span>
+                        <span className="font-medium">{incentive.manualOverrideReason}</span>
+                    </div>
+                )}
+
                 <Divider />
 
                 <Row
