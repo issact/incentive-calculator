@@ -29,9 +29,17 @@ export default function EventTimeline({ events }: { events: IncentiveEvent[] }) 
       return `${event.actorUser.name} requested payout`
     }
 
-    return event.reason
-  }
+    if (type === "APPROVED") {
+      return `${event.actorUser.name} approved incentive`
+    }
 
+    if (type === "PAID") {
+      return `${event.actorUser.name} completed payment`
+    }
+
+    return event.reason ?? "Status updated"
+  }
+  
   return (
 
     <ul className="relative space-y-6">

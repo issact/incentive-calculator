@@ -46,8 +46,20 @@ export async function reopenIncentive(id: string) {
     return apiFetch<IncentiveDetail>(`/incentives/${id}/reopen`, { method: "POST" })
 }
 
-export async function claimIncentive(id: string) {
-    return apiFetch<IncentiveDetail>(`/incentives/${id}/claim`, { method: "POST" })
+export async function claimIncentive(
+    id: string,
+    payload: {
+        bankAccountNumber?: string
+        bankIfscCode?: string
+        bankAccountName?: string
+        upiId?: string
+        note?: string
+    }
+) {
+    return apiFetch<IncentiveDetail>(`/incentives/${id}/claim`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+    })
 }
 
 export async function markPaid(id: string) {

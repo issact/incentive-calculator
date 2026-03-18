@@ -96,15 +96,24 @@ export type Incentive = {
 
     finalAmount: string | number
     createdAt: string
+
     claimRequestedAt?: string | null
+    bankAccountNumber?: string | null
+    bankIfscCode?: string | null
+    bankAccountName?: string | null
+    upiId?: string | null
+    claimNote?: string | null
+    paidAt?: string | null
 
     sale: Pick<
         Sale,
-        "id" | "projectName" | "customerName" | "city" | "state"
+        "id" | "projectName" | "customerName" | "city" | "state" | "saleCode"
     >
     saleValue: number
 
     beneficiaryUser: Pick<User, "id" | "name" | "email" | "role">
+
+
 }
 
 export type IncentiveDetail = {
@@ -151,6 +160,12 @@ export type IncentiveDetail = {
     finalAmount: string | number
 
     claimRequestedAt?: string | null
+    bankAccountNumber?: string | null
+    bankIfscCode?: string | null
+    bankAccountName?: string | null
+    upiId?: string | null
+    claimNote?: string | null
+    paidAt?: string | null
 
     sale: Sale
     events: IncentiveEvent[]
@@ -182,4 +197,12 @@ export type CreateRuleInput = {
     level: IncentiveLevel
     ratePercent: number
     name?: string
+}
+
+export type ClaimPayload = {
+    bankAccountNumber?: string
+    bankIfscCode?: string
+    bankAccountName?: string
+    upiId?: string
+    note?: string
 }

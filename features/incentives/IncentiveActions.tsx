@@ -8,11 +8,12 @@ import {
   markPaid,
   reopenIncentive
 } from "@/services/incentives.api"
-import type { IncentiveDetail, User } from "@/types/api.types"
+import type { ClaimPayload, IncentiveDetail, User } from "@/types/api.types"
 import { useState } from "react"
 import HoldModal from "./HoldModal"
 import ApproveModal from "./ApproveModal"
 import { useRouter } from "next/navigation"
+import ClaimModal from "./ClaimModal"
 
 export default function IncentiveActions({
   incentive,
@@ -23,6 +24,7 @@ export default function IncentiveActions({
 }) {
   const [approveOpen, setApproveOpen] = useState(false)
   const [holdOpen, setHoldOpen] = useState(false)
+  const [claimOpen, setClaimOpen] = useState(false)
 
   const qc = useQueryClient()
   const router = useRouter()
@@ -60,7 +62,7 @@ export default function IncentiveActions({
   })
 
   const claim = useMutation({
-    mutationFn: () => claimIncentive(incentive.id),
+    mutationFn: (data: ClaimPayload) => claimIncentive(incentive.id, data),
     onSuccess: () => {
       invalidateIncentives()
       router.refresh()
@@ -106,9 +108,9 @@ export default function IncentiveActions({
       message = "Waiting for the assigned reviewer to approve."
     } else if (status === "CLAIMABLE") {
       message = "Waiting for the beneficiary to claim the incentive."
-    }  else if (status === "CLAIM_REQUESTED") {
+    } else if (status === "CLAIM_REQUESTED") {
       message = "Waiting for finance to complete payment."
-    } 
+    }
 
     return (
       <div className="text-sm text-muted">
@@ -152,11 +154,9 @@ export default function IncentiveActions({
 
       {canClaim && (
         <button
-          className="bg-primary text-white border-primary hover:bg-primary-hover cursor-pointer"
-          disabled={claim.isPending}
-          onClick={() => claim.mutate()}
+          onClick={() => setClaimOpen(true)}
         >
-          {claim.isPending ? "Claiming..." : "Claim Incentive"}
+          Claim Incentive
         </button>
       )}
 
@@ -188,6 +188,16 @@ export default function IncentiveActions({
         onSubmit={(reason) => {
           hold.mutate(reason)
           setHoldOpen(false)
+        }}
+      />
+
+      <ClaimModal
+        open={claimOpen}
+        loading={claim.isPending}
+        onClose={() => setClaimOpen(false)}
+        onSubmit={(data) => {
+          claim.mutate(data)
+          setClaimOpen(false)
         }}
       />
     </div>

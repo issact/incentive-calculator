@@ -84,7 +84,8 @@ function isAllowed(pathname: string, role: string) {
             "/incentives/my",
             "/incentives/review",
             "/reports/incentives",
-            "/profile"
+            "/profile",
+            "/payments"
         ],
 
         ADMIN: [
@@ -109,6 +110,7 @@ export const config = {
         "/sales/:path*",
         "/incentives/:path*",
         "/reports/:path*",
+        "/payments/:path*",
         "/admin/:path*",
         "/profile",
         "/login"
