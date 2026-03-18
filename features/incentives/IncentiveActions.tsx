@@ -106,6 +106,8 @@ export default function IncentiveActions({
       message = "Waiting for the assigned reviewer to approve."
     } else if (status === "CLAIMABLE") {
       message = "Waiting for the beneficiary to claim the incentive."
+    }  else if (status === "CLAIM_REQUESTED") {
+      message = "Waiting for finance to complete payment."
     } 
 
     return (
