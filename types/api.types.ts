@@ -47,6 +47,10 @@ export type Sale = {
     customerPhone?: string | null
     brokerChannel?: "DIRECT" | "PARTNER" | "BROKER" | null
     notes?: string | null
+    incentives: {
+        level: string;
+        status: IncentiveStatus
+    }[]
 }
 
 export type IncentiveEvent = {
@@ -73,6 +77,23 @@ export type Incentive = {
     beneficiaryUserId: string
     reviewerUserId: string
     status: IncentiveStatus
+    effectiveStatus?: IncentiveStatus
+
+    effectiveHoldReason?: string | null
+    effectiveHeldBy?: {
+        id: string
+        name: string
+        role: UserRole
+    } | null
+
+    holdReason?: string | null
+    heldBy?: {
+        id: string
+        name: string
+        role: UserRole
+    } | null
+    heldById?: string | null
+    
     finalAmount: string | number
     createdAt: string
     claimRequestedAt?: string | null
@@ -89,6 +110,14 @@ export type IncentiveDetail = {
     id: string
     level: IncentiveLevel
     status: IncentiveStatus
+    effectiveStatus?: IncentiveStatus
+
+    effectiveHoldReason?: string | null
+    effectiveHeldBy?: {
+        id: string
+        name: string
+        role: UserRole
+    } | null
 
     beneficiaryUserId: string
     beneficiaryUser: {
@@ -102,6 +131,14 @@ export type IncentiveDetail = {
         name: string;
         role: UserRole;
     };
+
+    holdReason?: string | null
+    heldBy?: {
+        id: string
+        name: string
+        role: UserRole
+    } | null
+    heldById?: string | null
 
     rulePercent: number
     baseAmount: string | number

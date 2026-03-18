@@ -27,13 +27,14 @@ export default function IncentiveActions({
   const qc = useQueryClient()
   const router = useRouter()
 
+  const status = incentive.effectiveStatus ?? incentive.status
   const isBeneficiary = user?.id === incentive.beneficiaryUserId
   const isReviewer = user?.id === incentive.reviewerUserId
   const isFinance = user?.role === "OWNER_FINANCE"
 
   function invalidateIncentives() {
-    qc.invalidateQueries({ queryKey: ["my-incentives"] })
-    qc.invalidateQueries({ queryKey: ["review-incentives"] })
+    qc.invalidateQueries({ queryKey: ["my-incentives"], exact: false })
+    qc.invalidateQueries({ queryKey: ["review-incentives"], exact: false })
     qc.invalidateQueries({ queryKey: ["reports"] })
     qc.invalidateQueries({ queryKey: ["incentive-detail", incentive.id] })
   }
@@ -52,7 +53,10 @@ export default function IncentiveActions({
 
   const hold = useMutation({
     mutationFn: (reason: string) => holdIncentive(incentive.id, reason),
-    onSuccess: invalidateIncentives
+    onSuccess: () => {
+      invalidateIncentives()
+      router.refresh()
+    }
   })
 
   const claim = useMutation({
@@ -65,7 +69,10 @@ export default function IncentiveActions({
 
   const reopen = useMutation({
     mutationFn: () => reopenIncentive(incentive.id),
-    onSuccess: invalidateIncentives
+    onSuccess: () => {
+      invalidateIncentives()
+      router.refresh()
+    }
   })
 
   const pay = useMutation({
@@ -74,20 +81,17 @@ export default function IncentiveActions({
   })
 
   const canApprove =
-    isReviewer && incentive.status === "PENDING_REVIEW"
+    isReviewer && status === "PENDING_REVIEW"
 
   const canHold =
-    isReviewer && incentive.status === "PENDING_REVIEW"
+    isReviewer && status === "PENDING_REVIEW"
 
-  const canReopen =
-    isReviewer && incentive.status === "ON_HOLD"
+  const canReopen = isReviewer && status === "ON_HOLD" && user?.id === incentive.heldById
 
   const canClaim =
-    isBeneficiary && incentive.status === "CLAIMABLE"
+    isBeneficiary && status === "CLAIMABLE"
 
-  const canPay =
-    isFinance &&
-    incentive.status === "CLAIM_REQUESTED"
+  const canPay = isFinance && status === "CLAIM_REQUESTED"
 
   const hasActions =
     canApprove || canHold || canReopen || canClaim || canPay
@@ -96,13 +100,13 @@ export default function IncentiveActions({
 
     let message = "No actions available."
 
-    if (incentive.status === "PAID") {
+    if (status === "PAID") {
       message = "This incentive has already been paid."
-    } else if (incentive.status === "PENDING_REVIEW") {
+    } else if (status === "PENDING_REVIEW") {
       message = "Waiting for the assigned reviewer to approve."
-    } else if (incentive.status === "CLAIMABLE") {
+    } else if (status === "CLAIMABLE") {
       message = "Waiting for the beneficiary to claim the incentive."
-    }
+    } 
 
     return (
       <div className="text-sm text-muted">

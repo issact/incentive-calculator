@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { logout } from "@/services/auth.api"
 
@@ -8,12 +9,15 @@ export default function LogoutButton() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
 
+    const queryClient = useQueryClient()
+
     async function handleLogout() {
         if (loading) return
         setLoading(true)
 
         try {
             await logout()
+            queryClient.clear()
         } finally {
             router.push("/login")
             router.refresh()

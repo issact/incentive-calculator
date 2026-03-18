@@ -92,7 +92,15 @@ export default function ReviewTable({
                     {
                         header: "Status",
                         cell: (row) => (
-                            <StatusBadge status={row.status} />
+                            <StatusBadge
+                                status={row.effectiveStatus ?? row.status}
+                                subtitle={
+                                    row.effectiveHeldBy
+                                        ? `Blocked by ${row.effectiveHeldBy.name}`
+                                        : undefined
+                                }
+                                title={row.effectiveHoldReason ?? undefined}
+                            />
                         )
                     },
 

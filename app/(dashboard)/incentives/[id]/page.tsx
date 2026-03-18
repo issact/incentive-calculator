@@ -5,7 +5,7 @@ import IncentiveActions from "@/features/incentives/IncentiveActions"
 import EventTimeline from "@/features/incentives/EventTimeline"
 import { getSession } from "@/lib/getSession"
 import IncentiveBreakdown from "@/features/incentives/IncentiveBreakdown"
-import SaleNote from "@/features/incentives/SaleNote"
+import Note from "@/features/incentives/Note"
 
 export default async function IncentiveDetailPage({
   params,
@@ -36,7 +36,7 @@ export default async function IncentiveDetailPage({
           </p>
         </div>
 
-        <StatusBadge status={incentive.status} />
+        <StatusBadge status={incentive.effectiveStatus ?? incentive.status} />
 
       </div>
 
@@ -107,7 +107,30 @@ export default async function IncentiveDetailPage({
             Sale Note
           </h2>
 
-          <SaleNote note={incentive.sale.notes} />
+          <Note note={incentive.sale.notes} />
+        </div>
+      )}
+
+      {incentive?.effectiveHoldReason && (
+        <div className="rounded-lg border border-border bg-surface p-4 space-y-2">
+          <h2 className="text-sm font-semibold text-muted">
+            Incentive On Hold
+          </h2>
+
+          <h3 className="text-xs font-semibold text-muted">
+            Hold Reason
+          </h3>
+
+          <Note note={incentive.effectiveHoldReason} />
+
+          <h3 className="text-xs font-semibold text-muted">
+            Held By
+          </h3>
+
+          <p>
+            {incentive.effectiveHeldBy?.name} -{" "}
+            {incentive.effectiveHeldBy?.role.replaceAll("_", " ")}
+          </p>
         </div>
       )}
 
