@@ -3,7 +3,12 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
-const statuses = [
+type StatusOption = {
+    label: string
+    value: string
+}
+
+const DEFAULT_STATUSES: StatusOption[] = [
     { label: "All Status", value: "" },
     { label: "Pending Review", value: "PENDING_REVIEW" },
     { label: "Claimable", value: "CLAIMABLE" },
@@ -12,7 +17,11 @@ const statuses = [
     { label: "Paid", value: "PAID" }
 ]
 
-export default function IncentiveFilters() {
+export default function IncentiveFilters({
+    statuses = DEFAULT_STATUSES
+}: {
+    statuses?: StatusOption[]
+}) {
 
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -31,7 +40,19 @@ export default function IncentiveFilters() {
 
             <input
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                    const value = e.target.value
+                    setSearch(value)
+
+                    const params = new URLSearchParams(searchParams)
+
+                    if (value) params.set("search", value)
+                    else params.delete("search")
+
+                    params.set("page", "1")
+
+                    router.push(`${window.location.pathname}?${params.toString()}`)
+                }}
                 placeholder="Search project or customer..."
                 className="w-64 rounded-md border border-border bg-surface px-3 py-2 text-sm focus:ring-2 focus:ring-ring"
             />
@@ -40,7 +61,7 @@ export default function IncentiveFilters() {
             {/* Status Filter */}
 
             <select
-                defaultValue={searchParams.get("status") ?? ""}
+                value={searchParams.get("status") ?? ""}
                 onChange={(e) => {
 
                     const params = new URLSearchParams(searchParams)

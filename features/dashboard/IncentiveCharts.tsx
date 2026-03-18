@@ -13,16 +13,27 @@ import type { Incentive } from "@/types/api.types"
 
 export default function IncentiveCharts({ data }: { data: Incentive[] }) {
 
-  const chartData = data.map((i) => ({
-    date: i.createdAt.slice(0, 10),
-    amount: Number(i.finalAmount)
-  }))
+  const grouped = data.reduce((acc, i) => {
+    const date = i.createdAt.slice(0, 10)
+    acc[date] = (acc[date] || 0) + Number(i.finalAmount)
+    return acc
+  }, {} as Record<string, number>)
+
+  const chartData = Object.entries(grouped)
+    .map(([date, amount]) => ({ date, amount }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+
+  if (!chartData.length) {
+    return <div className="h-80 flex items-center justify-center text-sm text-muted">
+      No data available
+    </div>
+  }
 
   return (
 
-    <div className="h-80 w-full">
+    <div className="w-full" style={{ height: 320 }}>
 
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
 
         <LineChart data={chartData}>
 

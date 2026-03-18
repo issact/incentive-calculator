@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { saleSchema, type SaleFormInput, SaleFormValues } from "./sale.schema"
 import { createSale } from "@/services/sales.api"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { Calendar } from "lucide-react"
 
 export default function SaleForm() {
   const router = useRouter()
+  const qc = useQueryClient()
 
   const form = useForm<SaleFormInput, unknown, SaleFormValues>({
     resolver: zodResolver(saleSchema),
@@ -19,6 +20,7 @@ export default function SaleForm() {
   const mutation = useMutation({
     mutationFn: createSale,
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-incentives"], exact: false })
       router.push("/incentives/my")
     },
     onError: (err: unknown) => {

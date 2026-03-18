@@ -93,7 +93,7 @@ export type Incentive = {
         role: UserRole
     } | null
     heldById?: string | null
-    
+
     finalAmount: string | number
     createdAt: string
     claimRequestedAt?: string | null
@@ -102,6 +102,7 @@ export type Incentive = {
         Sale,
         "id" | "projectName" | "customerName" | "city" | "state"
     >
+    saleValue: number
 
     beneficiaryUser: Pick<User, "id" | "name" | "email" | "role">
 }
