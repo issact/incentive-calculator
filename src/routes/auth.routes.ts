@@ -42,7 +42,8 @@ router.post("/login", async (req, res) => {
             // Cross-site cookies for Vercel(frontend) -> Render(backend) require SameSite=None + Secure.
             // sameSite: isProd ? "none" : "lax",
             secure: true,
-            sameSite: "none",
+            sameSite: "lax",
+            domain: ".tomatoweb.site",
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 * 7
         })
