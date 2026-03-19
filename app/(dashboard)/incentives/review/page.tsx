@@ -49,8 +49,7 @@ export default async function ReviewPage({
             <div className="flex items-center justify-between">
                 <IncentiveFilters statuses={REVIEW_STATUSES} />
             </div>
-
-
+            
             {/* Table */}
 
             <div className="rounded-xl border border-border bg-surface p-4">
