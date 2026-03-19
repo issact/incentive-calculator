@@ -1,11 +1,12 @@
 import { prisma } from "../lib/prisma"
 import { generateIncentivesForSale } from "../lib/incentive.engine"
 import { HttpError } from "../utils/errors.js"
+import { notifyReviewersIncentivesCreatedForSale } from "./notification.service.js"
 
 
 export async function createSale(data: any, userId: string) {
 
-    return prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
 
         const existingSale = await tx.sale.findUnique({
             where: { saleCode: data.saleCode }
@@ -35,9 +36,14 @@ export async function createSale(data: any, userId: string) {
 
         await generateIncentivesForSale(tx, sale.id)
 
-        return {
-            ...sale,
-            saleValue: Number(sale.saleValue)
-        }
+        return sale
     })
+
+    // Best-effort notification: do not affect core flow.
+    void notifyReviewersIncentivesCreatedForSale(result.id)
+
+    return {
+        ...result,
+        saleValue: Number(result.saleValue)
+    }
 }

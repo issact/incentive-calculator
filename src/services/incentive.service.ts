@@ -4,6 +4,14 @@ import { IncentiveStatus } from "../generated/prisma/client"
 import { calculateScoreMultiplier } from "../utils/helpers"
 import type { IncentiveListQuery, SortOrder } from "../utils/pagination"
 import { HttpError } from "../utils/errors.js"
+import {
+    notifyBeneficiaryIncentiveApproved,
+    notifyBeneficiaryIncentiveHeld,
+    notifyBeneficiaryIncentiveReopened,
+    notifyBeneficiaryPaid,
+    notifyFinanceClaimRequested,
+    notifyNextReviewerAfterApproval
+} from "./notification.service.js"
 
 
 const LEVEL_ORDER: IncentiveLevel[] = [
@@ -472,7 +480,7 @@ export async function approveIncentive(
     input?: ApproveInput
 ) {
 
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
             where: { id: incentiveId },
@@ -590,6 +598,15 @@ export async function approveIncentive(
 
     })
 
+    void notifyBeneficiaryIncentiveApproved(updated.id).catch((err) =>
+        console.error("[notify] approveIncentive", err)
+    )
+
+    void notifyNextReviewerAfterApproval(updated.saleId, updated.level).catch((err) =>
+        console.error("[notify] nextReviewerAfterApproval", err)
+    )
+
+    return updated
 }
 
 
@@ -599,7 +616,7 @@ export async function holdIncentive(
     reason: string
 ) {
 
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
             where: { id: incentiveId }
@@ -643,6 +660,11 @@ export async function holdIncentive(
         return updated
     })
 
+    void notifyBeneficiaryIncentiveHeld(updated.id).catch((err) =>
+        console.error("[notify] holdIncentive", err)
+    )
+
+    return updated
 }
 
 
@@ -651,7 +673,7 @@ export async function reopenIncentive(
     actorId: string
 ) {
 
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
             where: { id: incentiveId }
@@ -695,6 +717,11 @@ export async function reopenIncentive(
         return updated
     })
 
+    void notifyBeneficiaryIncentiveReopened(updated.id).catch((err) =>
+        console.error("[notify] reopenIncentive", err)
+    )
+
+    return updated
 }
 
 
@@ -709,7 +736,7 @@ export async function claimIncentive(
         note?: string
     }
 ) {
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         if (!payload.bankAccountNumber && !payload.upiId) {
             throw HttpError.badRequest("Provide bank details or UPI", { code: "PAYMENT_DETAILS_REQUIRED" })
@@ -761,6 +788,12 @@ export async function claimIncentive(
         return updated
 
     })
+
+    void notifyFinanceClaimRequested(updated.id).catch((err) =>
+        console.error("[notify] claimIncentive", err)
+    )
+
+    return updated
 }
 
 
@@ -769,7 +802,7 @@ export async function markPaid(
     actorId: string
 ) {
 
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
             where: { id: incentiveId }
@@ -814,6 +847,12 @@ export async function markPaid(
         return updated
 
     })
+
+    void notifyBeneficiaryPaid(updated.id).catch((err) =>
+        console.error("[notify] markPaid", err)
+    )
+
+    return updated
 }
 
 

@@ -70,7 +70,7 @@ export async function generateIncentivesForSale(
         where: { saleId }
     })
 
-    if (existing > 0) return
+    if (existing > 0) return []
 
     const rules = await tx.incentiveRule.findMany({
         where: {
@@ -144,13 +144,17 @@ export async function generateIncentivesForSale(
 
     })
 
-    if (!incentivesToCreate.length) return
+    if (!incentivesToCreate.length) return []
+
+    const createdIncentiveIds: string[] = []
 
     for (const incentiveData of incentivesToCreate) {
 
         const created = await tx.incentive.create({
             data: incentiveData
         })
+
+        createdIncentiveIds.push(created.id)
 
         await tx.incentiveEvent.create({
             data: {
@@ -166,4 +170,5 @@ export async function generateIncentivesForSale(
 
     }
 
+    return createdIncentiveIds
 }

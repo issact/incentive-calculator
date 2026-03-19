@@ -25,11 +25,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-app.use("/auth", authRoutes);
-app.use("/admin", adminRoutes);
-app.use("/sales", salesRoutes);
-app.use("/incentives", incentiveRoutes);
-app.use("/reports", reportRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/sales", salesRoutes);
+app.use("/api/v1/incentives", incentiveRoutes);
+app.use("/api/v1/reports", reportRoutes);
 
 app.use(notFound)
 app.use(errorHandler)
