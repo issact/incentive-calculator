@@ -1,6 +1,7 @@
 import type { Request, Response } from "express"
 import * as reportService from "../services/report.service.js"
 import { buildPaginationMeta, parseIncentiveListQuery } from "../utils/pagination.js"
+import { sendError } from "../utils/errors.js"
 
 export async function getIncentiveReport(req: Request, res: Response) {
     try {
@@ -12,14 +13,7 @@ export async function getIncentiveReport(req: Request, res: Response) {
             pagination: buildPaginationMeta(query.page, query.limit, report.total)
         })
     } catch (err: any) {
-
-        console.error(err)
-
-        const status = err?.message?.startsWith("Invalid") || err?.message?.includes("fromDate must be")
-            ? 400
-            : 500
-        res.status(status).json({ message: err.message })
-
+        return sendError(res, err, { status: 500, message: "Failed to fetch report" })
     }
 }
 
@@ -32,13 +26,12 @@ export async function getDashboardStats(req: Request, res: Response) {
         res.json(stats)
 
     } catch (err: any) {
-
-        console.error(err)
-
-        res.status(500).json({
-            message: "Failed to fetch dashboard stats"
-        })
-
+        return sendError(
+            res,
+            err,
+            { status: 500, message: "Failed to fetch dashboard stats" },
+            { forceFallbackMessageOn5xx: true }
+        )
     }
 
 }

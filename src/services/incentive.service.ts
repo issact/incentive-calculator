@@ -3,6 +3,7 @@ import { IncentiveLevel, UserRole, type Prisma } from "../generated/prisma/clien
 import { IncentiveStatus } from "../generated/prisma/client"
 import { calculateScoreMultiplier } from "../utils/helpers"
 import type { IncentiveListQuery, SortOrder } from "../utils/pagination"
+import { HttpError } from "../utils/errors.js"
 
 
 const LEVEL_ORDER: IncentiveLevel[] = [
@@ -154,7 +155,7 @@ export async function getMyIncentives(userId: string, query: IncentiveListQuery)
         select: { role: true }
     })
 
-    if (!user) throw new Error("User not found")
+    if (!user) throw HttpError.notFound("User not found", { code: "USER_NOT_FOUND" })
 
     const ROLE_LEVEL: Record<UserRole, IncentiveLevel> = {
         SALES: IncentiveLevel.L1,
@@ -483,11 +484,11 @@ export async function approveIncentive(
         })
 
         if (!incentive) {
-            throw new Error("Incentive not found")
+            throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
         }
 
         if (incentive.reviewerUserId !== actorId) {
-            throw new Error("You are not the assigned reviewer")
+            throw HttpError.forbidden("You are not the assigned reviewer", { code: "NOT_ASSIGNED_REVIEWER" })
         }
 
 
@@ -501,15 +502,15 @@ export async function approveIncentive(
         const reviewerRole = incentive.reviewer.role
 
         if (reviewerRole !== REVIEW_ROLE_BY_LEVEL[incentive.level]) {
-            throw new Error("Reviewer role not allowed for this incentive level")
+            throw HttpError.forbidden("Reviewer role not allowed for this incentive level", { code: "REVIEWER_ROLE_NOT_ALLOWED" })
         }
 
         if (incentive.status === IncentiveStatus.ON_HOLD) {
-            throw new Error("Held incentive must be reopened before approval")
+            throw HttpError.badRequest("Held incentive must be reopened before approval", { code: "INCENTIVE_ON_HOLD" })
         }
 
         if (incentive.status !== IncentiveStatus.PENDING_REVIEW) {
-            throw new Error("Incentive not in review state")
+            throw HttpError.badRequest("Incentive not in review state", { code: "INCENTIVE_NOT_IN_REVIEW" })
         }
 
         const index = LEVEL_ORDER.indexOf(incentive.level)
@@ -527,7 +528,7 @@ export async function approveIncentive(
         })
 
         if (holdExists) {
-            throw new Error("Sale has a held incentive. Resolve hold before approval.")
+            throw HttpError.badRequest("Sale has a held incentive. Resolve hold before approval.", { code: "SALE_HAS_HELD_INCENTIVE" })
         }
 
 
@@ -605,19 +606,19 @@ export async function holdIncentive(
         })
 
         if (!incentive) {
-            throw new Error("Incentive not found")
+            throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
         }
 
         if (incentive.reviewerUserId !== actorId) {
-            throw new Error("You are not the assigned reviewer")
+            throw HttpError.forbidden("You are not the assigned reviewer", { code: "NOT_ASSIGNED_REVIEWER" })
         }
 
         if (incentive.status !== IncentiveStatus.PENDING_REVIEW) {
-            throw new Error("Only pending incentives can be held")
+            throw HttpError.badRequest("Only pending incentives can be held", { code: "INCENTIVE_NOT_PENDING" })
         }
 
         if (!reason?.trim()) {
-            throw new Error("Hold reason required")
+            throw HttpError.badRequest("Hold reason required", { code: "HOLD_REASON_REQUIRED" })
         }
 
         const updated = await tx.incentive.update({
@@ -657,19 +658,19 @@ export async function reopenIncentive(
         })
 
         if (!incentive) {
-            throw new Error("Incentive not found")
+            throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
         }
 
         if (incentive.status !== IncentiveStatus.ON_HOLD) {
-            throw new Error("Only held incentives can be reopened")
+            throw HttpError.badRequest("Only held incentives can be reopened", { code: "INCENTIVE_NOT_HELD" })
         }
 
         if (incentive.heldById !== actorId) {
-            throw new Error("Only the user who placed the hold can reopen it")
+            throw HttpError.forbidden("Only the user who placed the hold can reopen it", { code: "ONLY_HOLDER_CAN_REOPEN" })
         }
 
         if (incentive.reviewerUserId !== actorId) {
-            throw new Error("Only the assigned reviewer can reopen it")
+            throw HttpError.forbidden("Only the assigned reviewer can reopen it", { code: "NOT_ASSIGNED_REVIEWER" })
         }
 
         const updated = await tx.incentive.update({
@@ -711,7 +712,7 @@ export async function claimIncentive(
     return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         if (!payload.bankAccountNumber && !payload.upiId) {
-            throw new Error("Provide bank details or UPI")
+            throw HttpError.badRequest("Provide bank details or UPI", { code: "PAYMENT_DETAILS_REQUIRED" })
         }
 
         const incentive = await tx.incentive.findUnique({
@@ -719,15 +720,15 @@ export async function claimIncentive(
         })
 
         if (!incentive) {
-            throw new Error("Incentive not found")
+            throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
         }
 
         if (incentive.beneficiaryUserId !== actorId) {
-            throw new Error("Not allowed to claim this incentive")
+            throw HttpError.forbidden("Not allowed to claim this incentive", { code: "NOT_ALLOWED" })
         }
 
         if (incentive.status !== IncentiveStatus.CLAIMABLE) {
-            throw new Error("Incentive not claimable")
+            throw HttpError.badRequest("Incentive not claimable", { code: "INCENTIVE_NOT_CLAIMABLE" })
         }
 
         const updated = await tx.incentive.update({
@@ -775,18 +776,18 @@ export async function markPaid(
         })
 
         if (!incentive) {
-            throw new Error("Incentive not found")
+            throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
         }
         if (incentive.status === IncentiveStatus.PAID) {
-            throw new Error("Incentive already paid")
+            throw HttpError.badRequest("Incentive already paid", { code: "INCENTIVE_ALREADY_PAID" })
         }
 
         if (incentive.status !== IncentiveStatus.CLAIM_REQUESTED) {
-            throw new Error("Only claimed incentives can be paid")
+            throw HttpError.badRequest("Only claimed incentives can be paid", { code: "INCENTIVE_NOT_CLAIM_REQUESTED" })
         }
 
         if (!incentive.claimRequestedAt) {
-            throw new Error("Incentive not claimed yet")
+            throw HttpError.badRequest("Incentive not claimed yet", { code: "INCENTIVE_NOT_CLAIMED_YET" })
         }
 
         const updated = await tx.incentive.update({
@@ -908,7 +909,7 @@ export async function getIncentiveDetails(
     })
 
     if (!incentive) {
-        throw new Error("Incentive not found")
+        throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
     }
 
     // access control
@@ -916,7 +917,7 @@ export async function getIncentiveDetails(
         incentive.beneficiaryUserId !== actorId &&
         incentive.reviewerUserId !== actorId
     ) {
-        throw new Error("Not allowed to view this incentive")
+        throw HttpError.forbidden("Not allowed to view this incentive", { code: "NOT_ALLOWED" })
     }
 
     const state = computeEffectiveState(incentive)

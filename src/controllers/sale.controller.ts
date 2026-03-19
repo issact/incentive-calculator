@@ -1,6 +1,7 @@
 import type { Request, Response } from "express"
 import * as saleService from "../services/sale.service.js"
 import { createSaleSchema } from "../validations/sale.validation.js"
+import { sendError } from "../utils/errors.js"
 
 export async function createSale(req: Request, res: Response) {
     try {
@@ -9,10 +10,6 @@ export async function createSale(req: Request, res: Response) {
         const sale = await saleService.createSale(parsed, req.user!.id)
         res.json(sale)
     } catch (err: any) {
-        console.error(err)
-
-        res.status(500).json({
-            message: err.message || "Failed to create sale"
-        })
+        return sendError(res, err, { status: 500, message: "Failed to create sale" })
     }
 }

@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma"
 import { generateIncentivesForSale } from "../lib/incentive.engine"
+import { HttpError } from "../utils/errors.js"
 
 
 export async function createSale(data: any, userId: string) {
@@ -11,7 +12,7 @@ export async function createSale(data: any, userId: string) {
         })
 
         if (existingSale) {
-            throw new Error("Sale with this saleCode already exists")
+            throw HttpError.conflict("Sale with this saleCode already exists", { code: "SALE_CODE_EXISTS" })
         }
 
         const sale = await tx.sale.create({

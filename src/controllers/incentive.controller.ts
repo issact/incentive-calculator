@@ -2,6 +2,7 @@ import type { Request, Response } from "express"
 import * as incentiveService from "../services/incentive.service.js"
 import * as financeService from "../services/finance.service.js"
 import { buildPaginationMeta, parseIncentiveListQuery } from "../utils/pagination.js"
+import { sendError } from "../utils/errors.js"
 
 type IncentiveParams = {
     id: string
@@ -17,11 +18,7 @@ export async function getMyIncentives(req: Request, res: Response) {
             pagination: buildPaginationMeta(query.page, query.limit, result.total)
         })
     } catch (err: any) {
-        console.error(err)
-        const status = err?.message?.startsWith("Invalid") || err?.message?.includes("fromDate must be")
-            ? 400
-            : 500
-        res.status(status).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to fetch incentives" })
     }
 }
 
@@ -35,11 +32,7 @@ export async function getReviewQueue(req: Request, res: Response) {
             pagination: buildPaginationMeta(query.page, query.limit, result.total)
         })
     } catch (err: any) {
-        console.error(err)
-        const status = err?.message?.startsWith("Invalid") || err?.message?.includes("fromDate must be")
-            ? 400
-            : 500
-        res.status(status).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to fetch review queue" })
     }
 }
 
@@ -53,8 +46,7 @@ export async function approveIncentive(req: Request<IncentiveParams>, res: Respo
 
         res.json(result)
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to approve incentive" })
     }
 }
 
@@ -70,8 +62,7 @@ export async function holdIncentive(req: Request<IncentiveParams>, res: Response
 
         res.json(result)
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to hold incentive" })
     }
 }
 
@@ -84,8 +75,7 @@ export async function reopenIncentive(req: Request<IncentiveParams>, res: Respon
 
         res.json(result)
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to reopen incentive" })
     }
 }
 
@@ -105,8 +95,7 @@ export async function claimIncentive(
         res.json(result)
 
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to claim incentive" })
     }
 }
 
@@ -124,8 +113,7 @@ export async function markPaid(
         res.json(result)
 
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to mark incentive as paid" })
     }
 }
 
@@ -142,8 +130,7 @@ export async function getPaymentQueue(req: Request, res: Response) {
         })
 
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to fetch payment queue" })
     }
 }
 
@@ -155,8 +142,7 @@ export async function getPaymentDetail(req: Request<{ id: string }>, res: Respon
         res.json(result)
 
     } catch (err: any) {
-        console.error(err)
-        res.status(500).json({ message: err.message })
+        return sendError(res, err, { status: 500, message: "Failed to fetch payment detail" })
     }
 }
 
@@ -180,12 +166,6 @@ export async function getIncentiveDetails(
         res.json(incentive)
 
     } catch (err: any) {
-
-        console.error(err)
-
-        res.status(500).json({
-            message: err.message || "Failed to fetch incentive"
-        })
-
+        return sendError(res, err, { status: 500, message: "Failed to fetch incentive" })
     }
 }
