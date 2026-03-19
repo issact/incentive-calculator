@@ -1,4 +1,4 @@
-"use client"
+import ReloadPageButton from "@/components/ui/ReloadPageButton";
 
 export default function MaintenancePage() {
   return (
@@ -10,15 +10,7 @@ export default function MaintenancePage() {
         </p>
 
         <div className="mt-5 flex gap-3">
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-primary text-white border-primary"
-          >
-            Retry
-          </button>
-          <a href="/login" className="text-sm font-medium text-primary hover:text-primary-hover self-center">
-            Go to login
-          </a>
+          <ReloadPageButton />
         </div>
       </div>
     </div>
