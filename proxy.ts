@@ -9,10 +9,19 @@ export async function proxy(req: NextRequest) {
 
     const cookie = req.headers.get("cookie") ?? ""
 
-    const res = await fetch(`${API_URL}/auth/me`, {
-        headers: { cookie },
-        cache: "no-store",
-    })
+    if (pathname.startsWith("/maintenance")) {
+        return NextResponse.next()
+    }
+
+    let res: Response
+    try {
+        res = await fetch(`${API_URL}/auth/me`, {
+            headers: { cookie },
+            cache: "no-store",
+        })
+    } catch {
+        return NextResponse.redirect(new URL("/maintenance", req.url))
+    }
 
     // Not authenticated
     if (res.status === 401 || res.status === 403) {
@@ -22,6 +31,10 @@ export async function proxy(req: NextRequest) {
         }
 
         return NextResponse.redirect(new URL("/login", req.url))
+    }
+
+    if (!res.ok) {
+        return NextResponse.redirect(new URL("/maintenance", req.url))
     }
 
     const user = await res.json() as User
@@ -113,6 +126,7 @@ export const config = {
         "/payments/:path*",
         "/admin/:path*",
         "/profile",
-        "/login"
+        "/login",
+        "/maintenance"
     ]
 }

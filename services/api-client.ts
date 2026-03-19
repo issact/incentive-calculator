@@ -31,14 +31,28 @@ export async function apiFetch<T>(
   options?: RequestInit
 ): Promise<T> {
 
-  const res = await fetch(`${API_URL}${path}`, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers ?? {}),
-    },
-    ...options,
-  })
+  if (!API_URL) {
+    throw new ApiError({ message: "Missing NEXT_PUBLIC_API_URL", status: 500, code: "CONFIG_ERROR" })
+  }
+
+  let res: Response
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(options?.headers ?? {}),
+      },
+      ...options,
+    })
+  } catch (err) {
+    throw new ApiError({
+      message: "Backend unavailable",
+      status: 503,
+      code: "BACKEND_UNAVAILABLE",
+      details: { cause: err instanceof Error ? err.message : String(err) },
+    })
+  }
 
   if (!res.ok) {
     const parsed = await parseError(res)
