@@ -97,8 +97,13 @@ router.get("/me", requireAuth, async (req, res) => {
 
 router.post("/logout", (req, res) => {
     res.clearCookie("auth_token", {
-        path: "/"
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        domain: ".tomatoweb.site",
+        path: "/",
     })
+
     res.json({ message: "Logged out" })
 })
 
