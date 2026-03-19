@@ -7,24 +7,49 @@ import { createSale } from "@/services/sales.api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { Calendar } from "lucide-react"
+import { getErrorMessage } from "@/lib/getErrorMessage"
+import { useToast } from "@/providers/ToastProvider"
 
 export default function SaleForm() {
   const router = useRouter()
   const qc = useQueryClient()
+  const { toast } = useToast()
 
   const form = useForm<SaleFormInput, unknown, SaleFormValues>({
     resolver: zodResolver(saleSchema),
-    mode: "onChange"
+    mode: "onChange",
+    defaultValues: {
+      saleCode: "",
+      saleDate: "",
+      bookingDate: "",
+      closeDate: "",
+      projectName: "",
+      propertyType: "APARTMENT",
+      unitNumber: "",
+      city: "",
+      state: "",
+      brokerChannel: "DIRECT",
+      saleValue: 0,
+      customerName: "",
+      customerPhone: "",
+      notes: ""
+    }
   })
 
   const mutation = useMutation({
     mutationFn: createSale,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["my-incentives"], exact: false })
+      toast({ title: "Sale created", variant: "success" })
       router.push("/incentives/my")
     },
     onError: (err: unknown) => {
-      console.error(err)
+      // console.error(err)
+      toast({
+        title: "Failed to create sale",
+        description: getErrorMessage(err),
+        variant: "error",
+      })
     }
   })
 
@@ -48,6 +73,12 @@ export default function SaleForm() {
           placeholder="e.g. SALE-2026-001"
           {...form.register("saleCode")}
         />
+
+        {form.formState.errors.saleCode && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.saleCode.message}
+          </p>
+        )}
       </div>
 
       {/* Date */}
@@ -62,6 +93,12 @@ export default function SaleForm() {
         />
 
         <span className="absolute right-3 bottom-3 text-muted pointer-events-none cursor-pointer"><Calendar size={18} /></span>
+
+        {form.formState.errors.saleDate && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.saleDate.message}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1 relative">
@@ -75,6 +112,12 @@ export default function SaleForm() {
         />
 
         <span className="absolute right-3 bottom-3 text-muted pointer-events-none cursor-pointer"><Calendar size={18} /></span>
+
+        {form.formState.errors.bookingDate && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.bookingDate.message}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1 relative">
@@ -88,6 +131,12 @@ export default function SaleForm() {
         />
 
         <span className="absolute right-3 bottom-3 text-muted pointer-events-none cursor-pointer"><Calendar size={18} /></span>
+
+        {form.formState.errors.closeDate && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.closeDate.message}
+          </p>
+        )}
       </div>
 
       {/* Project */}
@@ -121,6 +170,12 @@ export default function SaleForm() {
           <option value="COMMERCIAL">Commercial</option>
         </select>
 
+        {form.formState.errors.propertyType && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.propertyType.message}
+          </p>
+        )}
+
       </div>
 
       <div className="flex flex-col gap-1">
@@ -132,6 +187,12 @@ export default function SaleForm() {
           placeholder="Unit number"
           {...form.register("unitNumber")}
         />
+
+        {form.formState.errors.unitNumber && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.unitNumber.message}
+          </p>
+        )}
       </div>
 
       {/* City */}
@@ -180,6 +241,12 @@ export default function SaleForm() {
           <option value="PARTNER">Partner</option>
           <option value="BROKER">Broker</option>
         </select>
+
+        {form.formState.errors.brokerChannel && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.brokerChannel.message}
+          </p>
+        )}
       </div>
 
       {/* Sale Value */}
@@ -230,6 +297,12 @@ export default function SaleForm() {
           placeholder="+91 9999999999"
           {...form.register("customerPhone")}
         />
+
+        {form.formState.errors.customerPhone && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.customerPhone.message}
+          </p>
+        )}
       </div>
 
       <div className="md:col-span-2 flex flex-col gap-1">
@@ -242,11 +315,17 @@ export default function SaleForm() {
           placeholder="Internal notes"
           {...form.register("notes")}
         />
+
+        {form.formState.errors.notes && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.notes.message}
+          </p>
+        )}
       </div>
 
       {mutation.isError && (
         <div className="md:col-span-2 text-sm text-danger">
-          {(mutation.error as Error).message}
+          {getErrorMessage(mutation.error)}
         </div>
       )}
 

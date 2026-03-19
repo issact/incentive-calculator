@@ -5,18 +5,38 @@ import { useQuery } from "@tanstack/react-query"
 import { getRules, getActiveRules } from "@/services/admin.api"
 import type { IncentiveRule } from "@/types/api.types"
 import DataTable from "@/components/ui/DataTable"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
+import EmptyState from "@/components/ui/EmptyState"
+import { getErrorMessage } from "@/lib/getErrorMessage"
 
 export default function RulesTable() {
   const [showAll, setShowAll] = useState(false)
 
-  const { data, isLoading } = useQuery<IncentiveRule[]>({
+  const { data, isLoading, isError, error, refetch } = useQuery<IncentiveRule[]>({
     queryKey: ["rules", showAll],
     queryFn: showAll ? getRules : getActiveRules
   })
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <DataTableSkeleton columns={6} rows={8} />
 
-  if (!data) return <div>No data</div>
+  if (isError) {
+    return (
+      <EmptyState
+        title="Couldn’t load rules"
+        description={getErrorMessage(error)}
+        action={<button onClick={() => refetch()}>Retry</button>}
+      />
+    )
+  }
+
+  if (!data?.length) {
+    return (
+      <EmptyState
+        title="No rules found"
+        description={showAll ? "No rule history available." : "No active rules available."}
+      />
+    )
+  }
 
   return (
     <>

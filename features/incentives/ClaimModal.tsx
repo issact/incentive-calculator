@@ -1,7 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import type { ClaimPayload } from "@/types/api.types"
+import { useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { claimFormSchema, type ClaimFormInput, type ClaimFormValues } from "./incentive-action.schemas"
+import { useEffect } from "react"
 
 type Props = {
     open: boolean
@@ -17,40 +20,51 @@ export default function ClaimModal({
     loading = false
 }: Props) {
 
-    const [mode, setMode] = useState<"BANK" | "UPI">("BANK")
-
-    const [form, setForm] = useState<ClaimPayload>({
-        bankAccountNumber: "",
-        bankIfscCode: "",
-        bankAccountName: "",
-        upiId: "",
-        note: ""
+    const form = useForm<ClaimFormInput, unknown, ClaimFormValues>({
+        resolver: zodResolver(claimFormSchema),
+        mode: "onChange",
+        defaultValues: {
+            mode: "BANK",
+            bankAccountName: "",
+            bankAccountNumber: "",
+            bankIfscCode: "",
+            upiId: "",
+            note: ""
+        }
     })
+
+    const mode = useWatch({ control: form.control, name: "mode" })
+
+    useEffect(() => {
+        if (open) {
+            form.reset({
+                mode: "BANK",
+                bankAccountName: "",
+                bankAccountNumber: "",
+                bankIfscCode: "",
+                upiId: "",
+                note: ""
+            })
+        }
+    }, [open, form])
 
     if (!open) return null
 
-    const isValid =
-        mode === "UPI"
-            ? !!form.upiId?.trim()
-            : !!(
-                form.bankAccountName?.trim() &&
-                form.bankAccountNumber?.trim() &&
-                form.bankIfscCode?.trim()
-            )
-
-    function handleSubmit() {
-        if (!isValid) return
-
-        onSubmit({
-            ...form,
-            ...(mode === "UPI"
+    function handleSubmit(values: ClaimFormValues) {
+        const payload: ClaimPayload =
+            values.mode === "UPI"
                 ? {
-                    bankAccountName: undefined,
-                    bankAccountNumber: undefined,
-                    bankIfscCode: undefined
+                    upiId: values.upiId,
+                    note: values.note || undefined,
                 }
-                : { upiId: undefined })
-        })
+                : {
+                    bankAccountName: values.bankAccountName,
+                    bankAccountNumber: values.bankAccountNumber,
+                    bankIfscCode: values.bankIfscCode,
+                    note: values.note || undefined,
+                }
+
+        onSubmit(payload)
     }
 
     return (
@@ -69,14 +83,16 @@ export default function ClaimModal({
                 </div>
 
                 {/* BODY */}
-                <div className="p-6 space-y-5">
+                <form noValidate onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col">
+                    <div className="p-6 space-y-5">
 
                     {/* Mode Toggle */}
                     <div className="flex gap-2">
                         {["BANK", "UPI"].map((m) => (
                             <button
                                 key={m}
-                                onClick={() => setMode(m as "BANK" | "UPI")}
+                                type="button"
+                                onClick={() => form.setValue("mode", m as "BANK" | "UPI", { shouldValidate: true })}
                                 className={`
                   px-3 py-1 text-sm border rounded-md
                   ${mode === m
@@ -96,29 +112,42 @@ export default function ClaimModal({
                             <input
                                 placeholder="Account Holder Name"
                                 className="w-full"
-                                value={form.bankAccountName ?? ""}
-                                onChange={(e) =>
-                                    setForm(prev => ({ ...prev, bankAccountName: e.target.value }))
-                                }
+                                {...form.register("bankAccountName")}
                             />
+                            {form.formState.errors.bankAccountName && (
+                                <p className="text-xs text-danger">
+                                    {form.formState.errors.bankAccountName.message}
+                                </p>
+                            )}
 
                             <input
                                 placeholder="Account Number"
                                 className="w-full"
-                                value={form.bankAccountNumber ?? ""}
-                                onChange={(e) =>
-                                    setForm(prev => ({ ...prev, bankAccountNumber: e.target.value }))
-                                }
+                                {...form.register("bankAccountNumber")}
                             />
+                            {form.formState.errors.bankAccountNumber && (
+                                <p className="text-xs text-danger">
+                                    {form.formState.errors.bankAccountNumber.message}
+                                </p>
+                            )}
 
                             <input
                                 placeholder="IFSC Code"
                                 className="w-full uppercase"
-                                value={form.bankIfscCode ?? ""}
-                                onChange={(e) =>
-                                    setForm(prev => ({ ...prev, bankIfscCode: e.target.value.toUpperCase() }))
-                                }
+                                {...form.register("bankIfscCode", {
+                                    onChange: (e) => {
+                                        form.setValue("bankIfscCode", String(e.target.value).toUpperCase(), {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                        })
+                                    }
+                                })}
                             />
+                            {form.formState.errors.bankIfscCode && (
+                                <p className="text-xs text-danger">
+                                    {form.formState.errors.bankIfscCode.message}
+                                </p>
+                            )}
 
                         </div>
                     )}
@@ -128,11 +157,13 @@ export default function ClaimModal({
                         <input
                             placeholder="UPI ID (example@upi)"
                             className="w-full"
-                            value={form.upiId ?? ""}
-                            onChange={(e) =>
-                                setForm(prev => ({ ...prev, upiId: e.target.value }))
-                            }
+                            {...form.register("upiId")}
                         />
+                    )}
+                    {mode === "UPI" && form.formState.errors.upiId && (
+                        <p className="text-xs text-danger">
+                            {form.formState.errors.upiId.message}
+                        </p>
                     )}
 
                     {/* NOTE (textarea FIXED) */}
@@ -145,31 +176,34 @@ export default function ClaimModal({
                             rows={3}
                             className="w-full resize-y min-h-20"
                             placeholder="Add any notes for finance..."
-                            value={form.note ?? ""}
-                            onChange={(e) =>
-                                setForm(prev => ({ ...prev, note: e.target.value }))
-                            }
+                            {...form.register("note")}
                         />
+                        {form.formState.errors.note && (
+                            <p className="text-xs text-danger">
+                                {form.formState.errors.note.message}
+                            </p>
+                        )}
                     </div>
 
-                </div>
+                    </div>
 
-                {/* FOOTER */}
-                <div className="p-4 border-t border-border flex justify-end gap-2">
+                    {/* FOOTER */}
+                    <div className="p-4 border-t border-border flex justify-end gap-2">
 
-                    <button onClick={onClose}>
+                    <button type="button" onClick={onClose}>
                         Cancel
                     </button>
 
                     <button
-                        disabled={!isValid || loading}
-                        onClick={handleSubmit}
+                        type="submit"
+                        disabled={!form.formState.isValid || loading}
                         className="bg-primary text-white border-primary hover:opacity-90 disabled:opacity-60"
                     >
                         {loading ? "Submitting..." : "Submit Claim"}
                     </button>
 
-                </div>
+                    </div>
+                </form>
 
             </div>
         </div>

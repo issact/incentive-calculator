@@ -8,6 +8,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { deleteUser } from "@/services/admin.api"
 import { useState } from "react"
 import EditUserModal from "./EditUserModal"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
+import EmptyState from "@/components/ui/EmptyState"
+import { getErrorMessage } from "@/lib/getErrorMessage"
+import { useToast } from "@/providers/ToastProvider"
 
 function roleLabel(role: User["role"]) {
     switch (role) {
@@ -27,7 +31,8 @@ function roleLabel(role: User["role"]) {
 }
 
 export default function UsersTable() {
-    const { data, isLoading } = useQuery<User[]>({
+    const { toast } = useToast()
+    const { data, isLoading, isError, error, refetch } = useQuery<User[]>({
         queryKey: ["admin-users"],
         queryFn: getUsers,
     })
@@ -42,15 +47,38 @@ export default function UsersTable() {
         mutationFn: deleteUser,
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["admin-users"] })
+            toast({ title: "User deactivated", variant: "success" })
+        },
+        onError: (err) => {
+            toast({
+                title: "Failed to deactivate user",
+                description: getErrorMessage(err),
+                variant: "error",
+            })
         }
     })
 
     if (isLoading) {
-        return <div className="text-sm text-muted">Loading users...</div>
+        return <DataTableSkeleton columns={8} rows={8} />
+    }
+
+    if (isError) {
+        return (
+            <EmptyState
+                title="Couldn’t load users"
+                description={getErrorMessage(error)}
+                action={<button onClick={() => refetch()}>Retry</button>}
+            />
+        )
     }
 
     if (!data?.length) {
-        return <div className="text-sm text-muted">No users found.</div>
+        return (
+            <EmptyState
+                title="No users found"
+                description="Create a user to get started."
+            />
+        )
     }
 
 
@@ -115,9 +143,10 @@ export default function UsersTable() {
                                                     deleteMutation.mutate(row.id)
                                                 }
                                             }}
+                                            disabled={deleteMutation.isPending}
                                             className="rounded bg-danger-soft px-2 py-1 text-xs font-medium text-danger"
                                         >
-                                            Deactivate
+                                            {deleteMutation.isPending ? "Deactivating..." : "Deactivate"}
                                         </button>
                                     </>
                                 ) : "Disabled"}

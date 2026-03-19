@@ -5,6 +5,7 @@ import { getIncentiveReports } from "@/services/reports.api"
 import { buildQuery } from "@/hooks/usePagination"
 import ExportCSVButton from "./ExportCSV"
 import type { Incentive, PaginationResponse } from "@/types/api.types"
+import Skeleton from "@/components/ui/Skeleton"
 
 type QueryParams = {
     page: number
@@ -14,12 +15,18 @@ type QueryParams = {
 export default function ExportWrapper({ queryParams }: { queryParams: QueryParams }) {
     const query = buildQuery(queryParams)
 
-    const { data } = useQuery<PaginationResponse<Incentive>>({
+    const { data, isLoading, isError } = useQuery<PaginationResponse<Incentive>>({
         queryKey: ["reports-export", query],
         queryFn: () => getIncentiveReports(query)
     })
 
-    if (!data) return null
+    if (isLoading) {
+        return <Skeleton className="h-9 w-28" />
+    }
+
+    if (isError) return null
+
+    if (!data || data.data.length === 0) return null
 
     return <ExportCSVButton rows={data.data} />
 }

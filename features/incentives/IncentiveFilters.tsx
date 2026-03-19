@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 
 type StatusOption = {
@@ -24,12 +24,13 @@ export default function IncentiveFilters({
 }) {
 
     const router = useRouter()
+    const pathname = usePathname()
     const searchParams = useSearchParams()
 
     const [search, setSearch] = useState(searchParams.get("search") ?? "")
 
     function resetFilters() {
-        router.push(window.location.pathname)
+        router.push(pathname)
     }
 
     return (
@@ -51,7 +52,7 @@ export default function IncentiveFilters({
 
                     params.set("page", "1")
 
-                    router.push(`${window.location.pathname}?${params.toString()}`)
+                    router.push(`${pathname}?${params.toString()}`)
                 }}
                 placeholder="Search project or customer..."
                 className="w-64 rounded-md border border-border bg-surface px-3 py-2 text-sm focus:ring-2 focus:ring-ring"
@@ -73,7 +74,7 @@ export default function IncentiveFilters({
 
                     params.set("page", "1")
 
-                    router.push(`${window.location.pathname}?${params.toString()}`)
+                    router.push(`${pathname}?${params.toString()}`)
                 }}
             >
                 {statuses.map(s => (

@@ -8,6 +8,9 @@ import DataTable from "@/components/ui/DataTable"
 import StatusBadge from "@/components/ui/StatusBadge"
 import { formatCurrency } from "@/lib/format"
 import Link from "next/link"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
+import EmptyState from "@/components/ui/EmptyState"
+import { getErrorMessage } from "@/lib/getErrorMessage"
 
 type ReviewTableQueryParams = {
     page: number
@@ -22,24 +25,37 @@ export default function ReviewTable({
 
     const query = buildQuery(queryParams)
 
-    const { data, isLoading } = useQuery<PaginationResponse<Incentive>>({
+    const { data, isLoading, isError, error, refetch } = useQuery<PaginationResponse<Incentive>>({
         queryKey: ["review-incentives", query],
         queryFn: () => getReviewQueue(query),
     })
 
     if (isLoading) {
         return (
-            <div className="py-10 text-center text-muted">
-                Loading incentives...
-            </div>
+            <DataTableSkeleton columns={5} rows={8} />
+        )
+    }
+
+    if (isError) {
+        return (
+            <EmptyState
+                title="Couldn’t load incentives"
+                description={getErrorMessage(error)}
+                action={
+                    <button onClick={() => refetch()}>
+                        Retry
+                    </button>
+                }
+            />
         )
     }
 
     if (!data || data.data.length === 0) {
         return (
-            <div className="py-10 text-center text-muted">
-                No incentives pending review
-            </div>
+            <EmptyState
+                title="No incentives pending review"
+                description="Try adjusting your filters."
+            />
         )
     }
 

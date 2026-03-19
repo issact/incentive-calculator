@@ -1,6 +1,8 @@
 import ReviewTable from "@/features/incentives/ReviewTable"
 import IncentiveFilters from "@/features/incentives/IncentiveFilters"
 import { Suspense } from "react"
+import Skeleton from "@/components/ui/Skeleton"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
 
 export default async function ReviewPage({
     searchParams
@@ -47,14 +49,24 @@ export default async function ReviewPage({
             {/* Filters */}
 
             <div className="flex items-center justify-between">
-                <IncentiveFilters statuses={REVIEW_STATUSES} />
+                <Suspense
+                    fallback={
+                        <div className="flex flex-wrap items-center gap-3">
+                            <Skeleton className="h-9 w-64" />
+                            <Skeleton className="h-9 w-40" />
+                            <Skeleton className="h-9 w-20" />
+                        </div>
+                    }
+                >
+                    <IncentiveFilters statuses={REVIEW_STATUSES} />
+                </Suspense>
             </div>
             
             {/* Table */}
 
             <div className="rounded-xl border border-border bg-surface p-4">
 
-                <Suspense fallback={<p className="text-sm text-muted">Loading incentives...</p>}>
+                <Suspense fallback={<DataTableSkeleton columns={5} rows={8} />}>
                     <ReviewTable queryParams={queryParams} />
                 </Suspense>
 

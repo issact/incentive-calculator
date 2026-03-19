@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { approvePayloadSchema } from "./incentive-action.schemas"
 
 type ScoreKey =
     | "valuation"
@@ -61,6 +62,9 @@ export default function ApproveModal({
 
     const [amount, setAmount] = useState("")
     const [reason, setReason] = useState("")
+    const [fieldErrors, setFieldErrors] = useState<{ amount?: string; reason?: string }>(
+        {}
+    )
 
     if (!open) return null
 
@@ -71,11 +75,25 @@ export default function ApproveModal({
         baseAmount ? Math.floor(baseAmount * multiplier) : null
 
     function handleSubmit() {
-        onSubmit({
+        const parsed = approvePayloadSchema.safeParse({
             performanceScores: scores,
             manualOverrideAmount: amount ? Number(amount) : undefined,
             reason: reason || undefined
         })
+
+        if (!parsed.success) {
+            const next: { amount?: string; reason?: string } = {}
+            for (const issue of parsed.error.issues) {
+                const key = issue.path[0]
+                if (key === "manualOverrideAmount") next.amount = issue.message
+                if (key === "reason") next.reason = issue.message
+            }
+            setFieldErrors(next)
+            return
+        }
+
+        setFieldErrors({})
+        onSubmit(parsed.data as ApprovePayload)
     }
 
     return (
@@ -238,11 +256,21 @@ export default function ApproveModal({
                                 value={amount}
                                 onChange={(e) => {
                                     const val = e.target.value
-                                    if (val === "") return setAmount("")
+                                    if (val === "") {
+                                        setAmount("")
+                                        setFieldErrors((prev) => ({ ...prev, amount: undefined }))
+                                        return
+                                    }
                                     setAmount(String(Math.max(0, Number(val))))
+                                    setFieldErrors((prev) => ({ ...prev, amount: undefined }))
                                 }}
                             />
                         </label>
+                        {fieldErrors.amount && (
+                            <p className="text-xs text-danger mt-1">
+                                {fieldErrors.amount}
+                            </p>
+                        )}
                         <p className="text-xs text-muted mt-1">
                             Overrides final calculated incentive
                         </p>
@@ -256,9 +284,17 @@ export default function ApproveModal({
                                 rows={3}
                                 className="w-full resize-y"
                                 value={reason}
-                                onChange={(e) => setReason(e.target.value)}
+                                onChange={(e) => {
+                                    setReason(e.target.value)
+                                    setFieldErrors((prev) => ({ ...prev, reason: undefined }))
+                                }}
                             />
                         </label>
+                        {fieldErrors.reason && (
+                            <p className="text-xs text-danger mt-1">
+                                {fieldErrors.reason}
+                            </p>
+                        )}
                     </div>
                 </div>
 

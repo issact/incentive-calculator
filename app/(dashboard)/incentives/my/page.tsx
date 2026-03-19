@@ -1,6 +1,8 @@
 import IncentiveTable from "@/features/incentives/IncentiveTable"
 import IncentiveFilters from "@/features/incentives/IncentiveFilters"
 import { Suspense } from "react"
+import Skeleton from "@/components/ui/Skeleton"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
 
 export default async function MyIncentivesPage({
     searchParams
@@ -39,7 +41,17 @@ export default async function MyIncentivesPage({
             {/* FILTER BAR */}
 
             <div className="flex items-center justify-between">
-                <IncentiveFilters />
+                <Suspense
+                    fallback={
+                        <div className="flex flex-wrap items-center gap-3">
+                            <Skeleton className="h-9 w-64" />
+                            <Skeleton className="h-9 w-40" />
+                            <Skeleton className="h-9 w-20" />
+                        </div>
+                    }
+                >
+                    <IncentiveFilters />
+                </Suspense>
             </div>
 
 
@@ -47,7 +59,7 @@ export default async function MyIncentivesPage({
 
             <div className="rounded-lg border border-border bg-surface p-4">
 
-                <Suspense fallback={<p>Loading incentives...</p>}>
+                <Suspense fallback={<DataTableSkeleton columns={5} rows={8} />}>
                     <IncentiveTable queryParams={queryParams} />
                 </Suspense>
 

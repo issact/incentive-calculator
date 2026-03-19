@@ -2,8 +2,11 @@
 
 import type { Incentive } from "@/types/api.types"
 import { formatCurrency } from "@/lib/format"
+import { useToast } from "@/providers/ToastProvider"
 
 export default function ExportCSVButton({ rows }: { rows: Incentive[] }) {
+
+    const { toast } = useToast()
 
     function escapeCSV(value: unknown) {
         if (value == null) return ""
@@ -59,6 +62,8 @@ export default function ExportCSVButton({ rows }: { rows: Incentive[] }) {
         document.body.removeChild(a)
 
         URL.revokeObjectURL(url)
+
+        toast({ title: "Exported CSV", variant: "success" })
     }
 
     return (

@@ -5,11 +5,31 @@ import type { Incentive } from "@/types/api.types"
 import Link from "next/link"
 import { getPaymentQueueServer } from "@/services/payment.server"
 import StatCard from "@/components/ui/StatCard"
+import EmptyState from "@/components/ui/EmptyState"
 
 export default async function PaymentsPage() {
 
     const res = await getPaymentQueueServer("")
     const data = res.data
+
+    if (!data || data.length === 0) {
+        return (
+            <div className="p-6 space-y-6 max-w-7xl mx-auto">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-semibold">
+                        Payment Processing
+                    </h1>
+                </div>
+
+                <div className="rounded-lg border border-border bg-surface p-4">
+                    <EmptyState
+                        title="No pending payments"
+                        description="Claims will appear here once requested."
+                    />
+                </div>
+            </div>
+        )
+    }
 
     const total = data.reduce((sum, i) => sum + Number(i.finalAmount), 0)
 

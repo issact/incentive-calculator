@@ -4,6 +4,8 @@ import { markPaid } from "@/services/payments.api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useToast } from "@/providers/ToastProvider"
+import { getErrorMessage } from "@/lib/getErrorMessage"
 
 export default function PayButton({
     id,
@@ -14,6 +16,7 @@ export default function PayButton({
 }) {
 
     const [confirmOpen, setConfirmOpen] = useState(false)
+    const { toast } = useToast()
 
     const qc = useQueryClient()
     const router = useRouter()
@@ -25,6 +28,14 @@ export default function PayButton({
             qc.invalidateQueries({ queryKey: ["incentive-detail", id] })
             router.refresh()
             setConfirmOpen(false)
+            toast({ title: "Marked as paid", variant: "success" })
+        },
+        onError: (err) => {
+            toast({
+                title: "Payment update failed",
+                description: getErrorMessage(err),
+                variant: "error",
+            })
         }
     })
 
@@ -70,6 +81,12 @@ export default function PayButton({
                             <p className="text-muted">
                                 Ensure the payment has been completed externally before proceeding.
                             </p>
+
+                            {pay.isError && (
+                                <div className="rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
+                                    {getErrorMessage(pay.error)}
+                                </div>
+                            )}
 
                         </div>
 

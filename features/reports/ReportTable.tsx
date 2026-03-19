@@ -8,6 +8,10 @@ import DataTable from "@/components/ui/DataTable"
 import StatusBadge from "@/components/ui/StatusBadge"
 import { formatCurrency } from "@/lib/format"
 import { exportSingleIncentive } from "@/lib/exportSingle"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
+import EmptyState from "@/components/ui/EmptyState"
+import { getErrorMessage } from "@/lib/getErrorMessage"
+import { useToast } from "@/providers/ToastProvider"
 
 type ReportTableQueryParams = {
   page: number
@@ -22,26 +26,36 @@ export default function ReportTable({
   queryParams: ReportTableQueryParams
 }) {
 
+  const { toast } = useToast()
   const query = buildQuery(queryParams)
 
-  const { data, isLoading } = useQuery<PaginationResponse<Incentive>>({
+  const { data, isLoading, isError, error, refetch } = useQuery<PaginationResponse<Incentive>>({
     queryKey: ["reports", queryParams],
     queryFn: () => getIncentiveReports(query)
   })
 
   if (isLoading) {
     return (
-      <div className="py-10 text-center text-muted">
-        Loading reports...
-      </div>
+      <DataTableSkeleton columns={6} rows={8} />
+    )
+  }
+
+  if (isError) {
+    return (
+      <EmptyState
+        title="Couldn’t load reports"
+        description={getErrorMessage(error)}
+        action={<button onClick={() => refetch()}>Retry</button>}
+      />
     )
   }
 
   if (!data || data.data.length === 0) {
     return (
-      <div className="py-10 text-center text-muted">
-        No reports found
-      </div>
+      <EmptyState
+        title="No reports found"
+        description="Try adjusting your filters."
+      />
     )
   }
 
@@ -104,7 +118,10 @@ export default function ReportTable({
             header: "",
             cell: (row) => (
               <button
-                onClick={() => exportSingleIncentive(row)}
+                onClick={() => {
+                  exportSingleIncentive(row)
+                  toast({ title: "Exported report", variant: "success" })
+                }}
                 className="text-sm font-medium text-primary hover:text-primary-hover"
               >
                 Export

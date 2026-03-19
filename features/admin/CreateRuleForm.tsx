@@ -1,29 +1,29 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { createRule } from "@/services/admin.api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import type { IncentiveLevel } from "@/types/api.types"
+import { createRuleSchema, type CreateRuleFormInput, type CreateRuleFormValues } from "./admin.schemas"
+import { getErrorMessage } from "@/lib/getErrorMessage"
+import { useToast } from "@/providers/ToastProvider"
 
 export default function CreateRuleForm() {
 
     const qc = useQueryClient()
-
-    type CreateRuleInput = {
-        level: IncentiveLevel
-        ratePercent: number
-        name?: string;
-    }
+    const { toast } = useToast()
 
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: { errors, isValid },
         reset
-    } = useForm<CreateRuleInput>({
+    } = useForm<CreateRuleFormInput, unknown, CreateRuleFormValues>({
+        resolver: zodResolver(createRuleSchema),
+        mode: "onChange",
         defaultValues: {
             level: "L1",
-            ratePercent: 0
+            ratePercent: 0.01
         }
     })
 
@@ -32,10 +32,18 @@ export default function CreateRuleForm() {
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["rules"] })
             reset()
+            toast({ title: "Rule created", variant: "success" })
+        },
+        onError: (err) => {
+            toast({
+                title: "Failed to create rule",
+                description: getErrorMessage(err),
+                variant: "error",
+            })
         }
     })
 
-    function onSubmit(data: CreateRuleInput) {
+    function onSubmit(data: CreateRuleFormValues) {
         mutation.mutate(data)
     }
 
@@ -47,7 +55,7 @@ export default function CreateRuleForm() {
         >
             {mutation.isError && (
                 <div className="md:col-span-3 rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
-                    {(mutation.error as Error).message || "Failed to create rule"}
+                    {getErrorMessage(mutation.error, "Failed to create rule")}
                 </div>
             )}
 
@@ -74,6 +82,11 @@ export default function CreateRuleForm() {
                     placeholder={`example rule`}
                     {...register("name")}
                 />
+                {errors.name && (
+                    <span className="text-xs text-danger">
+                        {errors.name.message}
+                    </span>
+                )}
             </div>
 
             <div className="flex flex-col gap-1">
@@ -87,17 +100,12 @@ export default function CreateRuleForm() {
                     step="0.01"
                     min="0"
                     placeholder="e.g. 12.5"
-                    {...register("ratePercent", {
-                        required: true,
-                        valueAsNumber: true,
-                        min: 0.01,
-                        max: 100
-                    })}
+                    {...register("ratePercent")}
                 />
 
                 {errors.ratePercent && (
                     <span className="text-xs text-danger">
-                        Rate must be between 0.01 and 100
+                        {errors.ratePercent.message}
                     </span>
                 )}
             </div>
@@ -105,7 +113,7 @@ export default function CreateRuleForm() {
             <div className="md:col-span-3 flex justify-end">
                 <button
                     type="submit"
-                    disabled={mutation.isPending}
+                    disabled={mutation.isPending || !isValid}
                     className="bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-50"
                 >
                     {mutation.isPending ? "Creating..." : "Create Rule"}

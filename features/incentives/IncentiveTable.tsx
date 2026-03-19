@@ -8,6 +8,9 @@ import DataTable from "@/components/ui/DataTable"
 import StatusBadge from "@/components/ui/StatusBadge"
 import { formatCurrency } from "@/lib/format"
 import Link from "next/link"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
+import EmptyState from "@/components/ui/EmptyState"
+import { getErrorMessage } from "@/lib/getErrorMessage"
 
 type IncentiveTableQueryParams = {
   page: number
@@ -24,21 +27,34 @@ export default function IncentiveTable({
 
   const query = buildQuery(queryParams)
 
-  const { data, isLoading } = useQuery<PaginationResponse<Incentive>>({
+  const { data, isLoading, isError, error, refetch } = useQuery<PaginationResponse<Incentive>>({
     queryKey: ["my-incentives", query],
     queryFn: () => getMyIncentives(query),
   })
 
   if (isLoading) {
     return (
-      <div className="py-10 text-center text-muted">
-        Loading incentives...
-      </div>
+      <DataTableSkeleton columns={5} rows={8} />
     )
   }
 
-  if (!data) {
-    return <div>No data</div>
+  if (isError) {
+    return (
+      <EmptyState
+        title="Couldn’t load incentives"
+        description={getErrorMessage(error)}
+        action={<button onClick={() => refetch()}>Retry</button>}
+      />
+    )
+  }
+
+  if (!data || data.data.length === 0) {
+    return (
+      <EmptyState
+        title="No incentives found"
+        description="Try adjusting your filters."
+      />
+    )
   }
 
   return (

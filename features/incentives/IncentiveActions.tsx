@@ -13,6 +13,8 @@ import HoldModal from "./HoldModal"
 import ApproveModal from "./ApproveModal"
 import { useRouter } from "next/navigation"
 import ClaimModal from "./ClaimModal"
+import { useToast } from "@/providers/ToastProvider"
+import { getErrorMessage } from "@/lib/getErrorMessage"
 
 export default function IncentiveActions({
   incentive,
@@ -27,6 +29,7 @@ export default function IncentiveActions({
 
   const qc = useQueryClient()
   const router = useRouter()
+  const { toast } = useToast()
 
   const status = incentive.effectiveStatus ?? incentive.status
   const isBeneficiary = user?.id === incentive.beneficiaryUserId
@@ -48,7 +51,14 @@ export default function IncentiveActions({
     onSuccess: () => {
       invalidateIncentives()
       router.refresh()
-    }
+    },
+    onError: (err) => {
+      toast({
+        title: "Approval failed",
+        description: getErrorMessage(err),
+        variant: "error",
+      })
+    },
   })
 
   const hold = useMutation({
@@ -56,7 +66,14 @@ export default function IncentiveActions({
     onSuccess: () => {
       invalidateIncentives()
       router.refresh()
-    }
+    },
+    onError: (err) => {
+      toast({
+        title: "Hold failed",
+        description: getErrorMessage(err),
+        variant: "error",
+      })
+    },
   })
 
   const claim = useMutation({
@@ -64,7 +81,14 @@ export default function IncentiveActions({
     onSuccess: () => {
       invalidateIncentives()
       router.refresh()
-    }
+    },
+    onError: (err) => {
+      toast({
+        title: "Claim failed",
+        description: getErrorMessage(err),
+        variant: "error",
+      })
+    },
   })
 
   const reopen = useMutation({
@@ -72,7 +96,15 @@ export default function IncentiveActions({
     onSuccess: () => {
       invalidateIncentives()
       router.refresh()
-    }
+      toast({ title: "Incentive reopened", variant: "success" })
+    },
+    onError: (err) => {
+      toast({
+        title: "Reopen failed",
+        description: getErrorMessage(err),
+        variant: "error",
+      })
+    },
   })
 
   const canApprove =
@@ -156,8 +188,12 @@ export default function IncentiveActions({
         loading={approve.isPending}
         onClose={() => setApproveOpen(false)}
         onSubmit={(data) => {
-          approve.mutate(data)
-          setApproveOpen(false)
+          approve.mutate(data, {
+            onSuccess: () => {
+              toast({ title: "Incentive approved", variant: "success" })
+              setApproveOpen(false)
+            }
+          })
         }}
         baseAmount={Number(incentive.baseAmount)}
       />
@@ -167,8 +203,12 @@ export default function IncentiveActions({
         loading={hold.isPending}
         onClose={() => setHoldOpen(false)}
         onSubmit={(reason) => {
-          hold.mutate(reason)
-          setHoldOpen(false)
+          hold.mutate(reason, {
+            onSuccess: () => {
+              toast({ title: "Incentive put on hold", variant: "success" })
+              setHoldOpen(false)
+            }
+          })
         }}
       />
 
@@ -177,8 +217,12 @@ export default function IncentiveActions({
         loading={claim.isPending}
         onClose={() => setClaimOpen(false)}
         onSubmit={(data) => {
-          claim.mutate(data)
-          setClaimOpen(false)
+          claim.mutate(data, {
+            onSuccess: () => {
+              toast({ title: "Claim submitted", variant: "success" })
+              setClaimOpen(false)
+            }
+          })
         }}
       />
     </div>

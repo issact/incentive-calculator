@@ -4,10 +4,13 @@ import { useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { logout } from "@/services/auth.api"
+import { useToast } from "@/providers/ToastProvider"
+import { getErrorMessage } from "@/lib/getErrorMessage"
 
 export default function LogoutButton() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+    const { toast } = useToast()
 
     const queryClient = useQueryClient()
 
@@ -18,6 +21,13 @@ export default function LogoutButton() {
         try {
             await logout()
             queryClient.clear()
+            toast({ title: "Logged out", variant: "success" })
+        } catch (err) {
+            toast({
+                title: "Logout failed",
+                description: getErrorMessage(err),
+                variant: "error",
+            })
         } finally {
             router.push("/login")
             router.refresh()

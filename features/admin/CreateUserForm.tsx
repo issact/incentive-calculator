@@ -1,23 +1,25 @@
 "use client"
 
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createUser } from "@/services/admin.api"
-import type { UserRole } from "@/types/api.types"
+import { createUserSchema, type CreateUserFormInput, type CreateUserFormValues } from "./admin.schemas"
+import { getErrorMessage } from "@/lib/getErrorMessage"
+import { useToast } from "@/providers/ToastProvider"
 
 export default function CreateUserForm() {
 
   const qc = useQueryClient()
+  const { toast } = useToast()
 
-  type CreateUserInput = {
-    name: string
-    email: string
-    password: string
-    role: Exclude<UserRole, "ADMIN">
-  }
-
-  const form = useForm<CreateUserInput>({
+  const form = useForm<CreateUserFormInput, unknown, CreateUserFormValues>({
+    resolver: zodResolver(createUserSchema),
+    mode: "onChange",
     defaultValues: {
+      name: "",
+      email: "",
+      password: "",
       role: "SALES"
     }
   })
@@ -27,10 +29,18 @@ export default function CreateUserForm() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-users"] })
       form.reset()
+      toast({ title: "User created", variant: "success" })
+    },
+    onError: (err) => {
+      toast({
+        title: "Failed to create user",
+        description: getErrorMessage(err),
+        variant: "error",
+      })
     }
   })
 
-  function onSubmit(data: CreateUserInput) {
+  function onSubmit(data: CreateUserFormValues) {
     mutation.mutate(data)
   }
 
@@ -41,37 +51,72 @@ export default function CreateUserForm() {
       className="grid gap-4 md:grid-cols-2"
     >
 
-      <input
-        autoComplete="off"
-        placeholder="Full name"
-        {...form.register("name", { required: true })}
-      />
+      {mutation.isError && (
+        <div className="md:col-span-2 rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
+          {getErrorMessage(mutation.error, "Failed to create user")}
+        </div>
+      )}
 
-      <input
-        autoComplete="off"
-        placeholder="Email address"
-        {...form.register("email", { required: true })}
-      />
+      <div className="flex flex-col gap-1">
+        <input
+          autoComplete="off"
+          placeholder="Full name"
+          {...form.register("name")}
+        />
+        {form.formState.errors.name && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.name.message}
+          </p>
+        )}
+      </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        {...form.register("password", { required: true })}
-      />
+      <div className="flex flex-col gap-1">
+        <input
+          autoComplete="off"
+          placeholder="Email address"
+          {...form.register("email")}
+        />
+        {form.formState.errors.email && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.email.message}
+          </p>
+        )}
+      </div>
 
-      <select {...form.register("role", { required: true })}>
-        <option value="SALES">Sales</option>
-        <option value="TEAM_LEAD">Team Lead</option>
-        <option value="MANAGER">Manager</option>
-        <option value="OWNER_FINANCE">Owner</option>
-      </select>
+      <div className="flex flex-col gap-1">
+        <input
+          type="password"
+          placeholder="Password"
+          {...form.register("password")}
+        />
+        {form.formState.errors.password && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.password.message}
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <select {...form.register("role")}>
+          <option value="SALES">Sales</option>
+          <option value="TEAM_LEAD">Team Lead</option>
+          <option value="MANAGER">Manager</option>
+          <option value="OWNER_FINANCE">Owner</option>
+        </select>
+        {form.formState.errors.role && (
+          <p className="text-xs text-danger">
+            {form.formState.errors.role.message}
+          </p>
+        )}
+      </div>
 
       <div className="md:col-span-2 flex justify-end">
         <button
           type="submit"
+          disabled={mutation.isPending || !form.formState.isValid}
           className="bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
         >
-          Create User
+          {mutation.isPending ? "Creating..." : "Create User"}
         </button>
       </div>
 

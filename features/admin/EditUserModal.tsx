@@ -1,21 +1,18 @@
 "use client"
 
 import { useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { updateUser } from "@/services/admin.api"
 import type { User, UserRole } from "@/types/api.types"
+import { editUserSchema, type EditUserFormInput, type EditUserFormValues } from "./admin.schemas"
+import { getErrorMessage } from "@/lib/getErrorMessage"
+import { useToast } from "@/providers/ToastProvider"
 
 type Props = {
     user: User
     users: User[]
     onClose: () => void
-}
-
-type FormInput = {
-    name: string
-    email: string
-    role: UserRole
-    managerId: string | null
 }
 
 const roleOrder: Record<UserRole, number> = {
@@ -29,13 +26,16 @@ const roleOrder: Record<UserRole, number> = {
 export default function EditUserModal({ user, users, onClose }: Props) {
 
     const qc = useQueryClient()
+    const { toast } = useToast()
 
-    const form = useForm<FormInput>({
+    const form = useForm<EditUserFormInput, unknown, EditUserFormValues>({
+        resolver: zodResolver(editUserSchema),
+        mode: "onChange",
         defaultValues: {
             name: user.name,
             email: user.email,
             role: user.role,
-            managerId: user.managerId ?? null
+            managerId: user.managerId ?? ""
         }
     })
 
@@ -45,10 +45,22 @@ export default function EditUserModal({ user, users, onClose }: Props) {
     })
 
     const mutation = useMutation({
-        mutationFn: (data: FormInput) => updateUser(user.id, data),
+        mutationFn: (data: EditUserFormValues) =>
+            updateUser(user.id, {
+                ...data,
+                managerId: data.managerId ? data.managerId : null
+            }),
         onSuccess: () => {
             qc.invalidateQueries({ queryKey: ["admin-users"] })
+            toast({ title: "User updated", variant: "success" })
             onClose()
+        },
+        onError: (err) => {
+            toast({
+                title: "Failed to update user",
+                description: getErrorMessage(err),
+                variant: "error",
+            })
         }
     })
 
@@ -79,14 +91,15 @@ export default function EditUserModal({ user, users, onClose }: Props) {
                 </div>
 
                 <form
-                    onSubmit={form.handleSubmit((data) =>
-                        mutation.mutate({
-                            ...data,
-                            managerId: data.managerId || null
-                        })
-                    )}
+                    onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
                     className="space-y-4"
                 >
+
+                    {mutation.isError && (
+                        <div className="rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
+                            {getErrorMessage(mutation.error, "Failed to update user")}
+                        </div>
+                    )}
 
                     {/* Name */}
                     <div className="space-y-1">
@@ -95,8 +108,13 @@ export default function EditUserModal({ user, users, onClose }: Props) {
                         </label>
                         <input
                             className="w-full rounded border border-border bg-background px-3 py-2 text-sm"
-                            {...form.register("name", { required: true })}
+                            {...form.register("name")}
                         />
+                        {form.formState.errors.name && (
+                            <p className="text-xs text-danger">
+                                {form.formState.errors.name.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Email */}
@@ -106,8 +124,13 @@ export default function EditUserModal({ user, users, onClose }: Props) {
                         </label>
                         <input
                             className="w-full rounded border border-border bg-background px-3 py-2 text-sm"
-                            {...form.register("email", { required: true })}
+                            {...form.register("email")}
                         />
+                        {form.formState.errors.email && (
+                            <p className="text-xs text-danger">
+                                {form.formState.errors.email.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Role */}
@@ -143,6 +166,11 @@ export default function EditUserModal({ user, users, onClose }: Props) {
                                 </option>
                             ))}
                         </select>
+                        {form.formState.errors.managerId && (
+                            <p className="text-xs text-danger">
+                                {form.formState.errors.managerId.message}
+                            </p>
+                        )}
 
                     </div>
 
@@ -159,7 +187,7 @@ export default function EditUserModal({ user, users, onClose }: Props) {
 
                         <button
                             type="submit"
-                            disabled={mutation.isPending}
+                            disabled={mutation.isPending || !form.formState.isValid}
                             className="rounded bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                         >
                             {mutation.isPending ? "Saving..." : "Save Changes"}

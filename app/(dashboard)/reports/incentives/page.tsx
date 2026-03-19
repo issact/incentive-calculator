@@ -3,6 +3,8 @@ import IncentiveFilters from "@/features/incentives/IncentiveFilters"
 import ExportWrapper from "@/features/reports/ExportWrapper"
 import ReportTable from "@/features/reports/ReportTable"
 import { Suspense } from "react"
+import Skeleton from "@/components/ui/Skeleton"
+import DataTableSkeleton from "@/components/ui/DataTableSkeleton"
 
 export default async function ReportsPage({
   searchParams
@@ -64,7 +66,17 @@ export default async function ReportsPage({
       {/* FILTER BAR */}
 
       <div className="flex items-center justify-between">
-        <IncentiveFilters statuses={REPORT_STATUSES} />
+        <Suspense
+          fallback={
+            <div className="flex flex-wrap items-center gap-3">
+              <Skeleton className="h-9 w-64" />
+              <Skeleton className="h-9 w-40" />
+              <Skeleton className="h-9 w-20" />
+            </div>
+          }
+        >
+          <IncentiveFilters statuses={REPORT_STATUSES} />
+        </Suspense>
       </div>
 
 
@@ -72,7 +84,7 @@ export default async function ReportsPage({
 
       <div className="rounded-lg border border-border bg-surface p-4">
 
-        <Suspense fallback={<p>Loading reports...</p>}>
+        <Suspense fallback={<DataTableSkeleton columns={6} rows={8} />}>
           <ReportTable queryParams={queryParams} />
         </Suspense>
 

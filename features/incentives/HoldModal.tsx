@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { holdReasonSchema } from "./incentive-action.schemas"
 
 const reasons = [
     "Missing required property documents",
@@ -24,6 +25,7 @@ export default function HoldModal({
 
     const [selected, setSelected] = useState(reasons[0])
     const [custom, setCustom] = useState("")
+    const [error, setError] = useState<string | null>(null)
 
     if (!open) return null
 
@@ -91,6 +93,12 @@ export default function HoldModal({
                         className="w-full"
                     />
 
+                    {error && (
+                        <p className="text-xs text-danger">
+                            {error}
+                        </p>
+                    )}
+
                 </div>
 
 
@@ -107,7 +115,15 @@ export default function HoldModal({
 
                     <button
                         disabled={loading || !finalReason.trim()}
-                        onClick={() => onSubmit(finalReason)}
+                        onClick={() => {
+                            const parsed = holdReasonSchema.safeParse(finalReason)
+                            if (!parsed.success) {
+                                setError(parsed.error.issues[0]?.message ?? "Please enter a valid hold reason")
+                                return
+                            }
+                            setError(null)
+                            onSubmit(parsed.data)
+                        }}
                         className="bg-warning text-white border-warning hover:opacity-90 px-4 py-2 text-sm rounded-md"
                     >
                         {loading ? "Submitting..." : "Submit Hold"}
