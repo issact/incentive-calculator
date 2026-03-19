@@ -8,6 +8,7 @@ import type { User, UserRole } from "@/types/api.types"
 import { editUserSchema, type EditUserFormInput, type EditUserFormValues } from "./admin.schemas"
 import { getErrorMessage } from "@/lib/getErrorMessage"
 import { useToast } from "@/providers/ToastProvider"
+import { getApiErrorCode, getApiErrorIssues } from "@/lib/getApiErrorMeta"
 
 type Props = {
     user: User
@@ -56,6 +57,22 @@ export default function EditUserModal({ user, users, onClose }: Props) {
             onClose()
         },
         onError: (err) => {
+            const code = getApiErrorCode(err)
+            const issues = getApiErrorIssues(err)
+
+            if (code === "VALIDATION_ERROR" && issues?.length) {
+                for (const issue of issues as Array<{ path?: unknown; message?: unknown }>) {
+                    const path = Array.isArray(issue.path) ? issue.path : []
+                    const field = typeof path[0] === "string" ? path[0] : undefined
+                    const message = typeof issue.message === "string" ? issue.message : "Invalid value"
+                    if (field) {
+                        form.setError(field as keyof EditUserFormValues, { type: "server", message })
+                    }
+                }
+                toast({ title: "Please fix the highlighted fields", variant: "info" })
+                return
+            }
+
             toast({
                 title: "Failed to update user",
                 description: getErrorMessage(err),
@@ -95,7 +112,7 @@ export default function EditUserModal({ user, users, onClose }: Props) {
                     className="space-y-4"
                 >
 
-                    {mutation.isError && (
+                    {mutation.isError && !getApiErrorIssues(mutation.error)?.length && (
                         <div className="rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
                             {getErrorMessage(mutation.error, "Failed to update user")}
                         </div>

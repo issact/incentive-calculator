@@ -7,6 +7,7 @@ import { createUser } from "@/services/admin.api"
 import { createUserSchema, type CreateUserFormInput, type CreateUserFormValues } from "./admin.schemas"
 import { getErrorMessage } from "@/lib/getErrorMessage"
 import { useToast } from "@/providers/ToastProvider"
+import { getApiErrorCode, getApiErrorIssues } from "@/lib/getApiErrorMeta"
 
 export default function CreateUserForm() {
 
@@ -32,6 +33,22 @@ export default function CreateUserForm() {
       toast({ title: "User created", variant: "success" })
     },
     onError: (err) => {
+      const code = getApiErrorCode(err)
+      const issues = getApiErrorIssues(err)
+
+      if (code === "VALIDATION_ERROR" && issues?.length) {
+        for (const issue of issues as Array<{ path?: unknown; message?: unknown }>) {
+          const path = Array.isArray(issue.path) ? issue.path : []
+          const field = typeof path[0] === "string" ? path[0] : undefined
+          const message = typeof issue.message === "string" ? issue.message : "Invalid value"
+          if (field) {
+            form.setError(field as keyof CreateUserFormValues, { type: "server", message })
+          }
+        }
+        toast({ title: "Please fix the highlighted fields", variant: "info" })
+        return
+      }
+
       toast({
         title: "Failed to create user",
         description: getErrorMessage(err),
@@ -51,7 +68,7 @@ export default function CreateUserForm() {
       className="grid gap-4 md:grid-cols-2"
     >
 
-      {mutation.isError && (
+      {mutation.isError && !getApiErrorIssues(mutation.error)?.length && (
         <div className="md:col-span-2 rounded border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
           {getErrorMessage(mutation.error, "Failed to create user")}
         </div>

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { Calendar } from "lucide-react"
 import { getErrorMessage } from "@/lib/getErrorMessage"
 import { useToast } from "@/providers/ToastProvider"
+import { getApiErrorCode, getApiErrorIssues } from "@/lib/getApiErrorMeta"
 
 export default function SaleForm() {
   const router = useRouter()
@@ -44,7 +45,27 @@ export default function SaleForm() {
       router.push("/incentives/my")
     },
     onError: (err: unknown) => {
-      // console.error(err)
+      const code = getApiErrorCode(err)
+      const issues = getApiErrorIssues(err)
+
+      if (code === "VALIDATION_ERROR" && issues?.length) {
+        for (const issue of issues as Array<{ path?: unknown; message?: unknown }>) {
+          const path = Array.isArray(issue.path) ? issue.path : []
+          const field = typeof path[0] === "string" ? path[0] : undefined
+          const message = typeof issue.message === "string" ? issue.message : "Invalid value"
+          if (field) {
+            form.setError(field as keyof SaleFormValues, { type: "server", message })
+          }
+        }
+
+        toast({ title: "Please fix the highlighted fields", variant: "info" })
+        return
+      }
+
+      if (code === "SALE_CODE_EXISTS") {
+        form.setError("saleCode", { type: "server", message: "Sale code already exists" })
+      }
+
       toast({
         title: "Failed to create sale",
         description: getErrorMessage(err),
@@ -323,7 +344,7 @@ export default function SaleForm() {
         )}
       </div>
 
-      {mutation.isError && (
+      {mutation.isError && !getApiErrorIssues(mutation.error)?.length && (
         <div className="md:col-span-2 text-sm text-danger">
           {getErrorMessage(mutation.error)}
         </div>

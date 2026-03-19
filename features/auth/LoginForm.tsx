@@ -8,6 +8,7 @@ import { loginSchema, type LoginFormInput, type LoginFormValues } from "./login.
 import { useMutation } from "@tanstack/react-query"
 import { getErrorMessage } from "@/lib/getErrorMessage"
 import { useToast } from "@/providers/ToastProvider"
+import { getApiErrorIssues } from "@/lib/getApiErrorMeta"
 
 export default function LoginForm() {
 
@@ -31,6 +32,20 @@ export default function LoginForm() {
             router.refresh()
         },
         onError: (err) => {
+            const issues = getApiErrorIssues(err)
+            if (issues?.length) {
+                for (const issue of issues as Array<{ path?: unknown; message?: unknown }>) {
+                    const path = Array.isArray(issue.path) ? issue.path : []
+                    const field = typeof path[0] === "string" ? path[0] : undefined
+                    const message = typeof issue.message === "string" ? issue.message : "Invalid value"
+                    if (field === "email" || field === "password") {
+                        form.setError(field, { type: "server", message })
+                    }
+                }
+                toast({ title: "Check your inputs", variant: "info" })
+                return
+            }
+
             toast({
                 title: "Login failed",
                 description: getErrorMessage(err, "Invalid credentials"),

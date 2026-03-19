@@ -5,7 +5,11 @@ const levelValues = ["L1", "L2", "L3", "L4"] as const
 
 export const createUserSchema = z.object({
   name: z.string().trim().min(2, "Name is required").max(120, "Name is too long"),
-  email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .pipe(z.email({ message: "Enter a valid email" })),
   password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
   role: z.enum(roleValues),
 })
@@ -15,7 +19,11 @@ export type CreateUserFormValues = z.infer<typeof createUserSchema>
 
 export const editUserSchema = z.object({
   name: z.string().trim().min(2, "Name is required").max(120, "Name is too long"),
-  email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .pipe(z.email({ message: "Enter a valid email" })),
   role: z.enum([...roleValues, "ADMIN"] as const),
   managerId: z.string().trim().optional().nullable(),
 })
