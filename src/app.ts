@@ -7,6 +7,7 @@ import adminRoutes from "./routes/admin.routes.js"
 import salesRoutes from "./routes/sales.routes.js"
 import incentiveRoutes from "./routes/incentive.routes.js"
 import reportRoutes from "./routes/report.routes.js"
+import healthRoutes from "./routes/health.routes.js"
 import { errorHandler, notFound } from "./middleware/error.middleware.js"
 
 
@@ -43,6 +44,8 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+
+app.use("/", healthRoutes)
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/admin", adminRoutes);
