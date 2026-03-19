@@ -1,1 +1,0 @@
-owner claiming action state not canging
