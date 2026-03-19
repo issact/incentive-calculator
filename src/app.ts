@@ -16,9 +16,28 @@ import { errorHandler, notFound } from "./middleware/error.middleware.js"
 
 const app = express();
 
+if (process.env.NODE_ENV === "production") {
+    // Needed for secure cookies behind Render / reverse proxies.
+    app.set("trust proxy", 1)
+}
+
+const corsOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean)
+
 app.use(cors({
-    origin: "http://localhost:3000",
-    credentials: true
+    origin: (origin, callback) => {
+        // Allow non-browser requests (no Origin header).
+        if (!origin) return callback(null, true)
+
+        if (corsOrigins.includes(origin)) {
+            return callback(null, true)
+        }
+
+        return callback(null, false)
+    },
+    credentials: true,
 }));
 
 app.use(express.json());

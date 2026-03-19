@@ -34,10 +34,13 @@ router.post("/login", async (req, res) => {
             role: user.role
         })
 
+        const isProd = process.env.NODE_ENV === "production"
+
         res.cookie("auth_token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            secure: isProd,
+            // Cross-site cookies for Vercel(frontend) -> Render(backend) require SameSite=None + Secure.
+            sameSite: isProd ? "none" : "lax",
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 * 7
         })
