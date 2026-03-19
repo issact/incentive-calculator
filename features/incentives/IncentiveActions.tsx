@@ -5,7 +5,6 @@ import {
   approveIncentive,
   claimIncentive,
   holdIncentive,
-  markPaid,
   reopenIncentive
 } from "@/services/incentives.api"
 import type { ClaimPayload, IncentiveDetail, User } from "@/types/api.types"
@@ -32,7 +31,6 @@ export default function IncentiveActions({
   const status = incentive.effectiveStatus ?? incentive.status
   const isBeneficiary = user?.id === incentive.beneficiaryUserId
   const isReviewer = user?.id === incentive.reviewerUserId
-  const isFinance = user?.role === "OWNER_FINANCE"
 
   function invalidateIncentives() {
     qc.invalidateQueries({ queryKey: ["my-incentives"], exact: false })
@@ -77,11 +75,6 @@ export default function IncentiveActions({
     }
   })
 
-  const pay = useMutation({
-    mutationFn: () => markPaid(incentive.id),
-    onSuccess: invalidateIncentives
-  })
-
   const canApprove =
     isReviewer && status === "PENDING_REVIEW"
 
@@ -93,10 +86,8 @@ export default function IncentiveActions({
   const canClaim =
     isBeneficiary && status === "CLAIMABLE"
 
-  const canPay = isFinance && status === "CLAIM_REQUESTED"
-
   const hasActions =
-    canApprove || canHold || canReopen || canClaim || canPay
+    canApprove || canHold || canReopen || canClaim
 
   if (!hasActions) {
 
@@ -157,16 +148,6 @@ export default function IncentiveActions({
           onClick={() => setClaimOpen(true)}
         >
           Claim Incentive
-        </button>
-      )}
-
-      {canPay && (
-        <button
-          className="bg-accent text-white border-accent hover:opacity-90 cursor-pointer"
-          disabled={pay.isPending}
-          onClick={() => pay.mutate()}
-        >
-          {pay.isPending ? "Processing..." : "Mark Paid"}
         </button>
       )}
 

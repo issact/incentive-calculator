@@ -1,6 +1,6 @@
 "use client"
 
-import { markPaid } from "@/services/incentives.api"
+import { markPaid } from "@/services/payments.api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import { useRouter } from "next/navigation"

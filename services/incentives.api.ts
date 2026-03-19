@@ -62,6 +62,3 @@ export async function claimIncentive(
     })
 }
 
-export async function markPaid(id: string) {
-    return apiFetch<IncentiveDetail>(`/incentives/${id}/pay`, { method: "POST" })
-}

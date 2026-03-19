@@ -17,6 +17,12 @@ export default async function ReviewPage({
         status: typeof sp.status === "string" ? sp.status : undefined
     }
 
+    const REVIEW_STATUSES = [
+        { label: "All Status", value: "" },
+        { label: "Pending Review", value: "PENDING_REVIEW" },
+        { label: "On Hold", value: "ON_HOLD" },
+    ]
+
     return (
 
         <div className="space-y-6 max-w-7xl mx-auto p-2">
@@ -41,7 +47,7 @@ export default async function ReviewPage({
             {/* Filters */}
 
             <div className="flex items-center justify-between">
-                <IncentiveFilters />
+                <IncentiveFilters statuses={REVIEW_STATUSES} />
             </div>
 
 
