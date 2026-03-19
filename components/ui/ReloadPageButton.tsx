@@ -13,7 +13,7 @@ export default function ReloadPageButton() {
         setLoading(true)
 
         try {
-            router.refresh()
+            router.push("/")
 
             // simulate slight delay for UX smoothness
             await new Promise((r) => setTimeout(r, 800))
