@@ -18,7 +18,7 @@ export default function DashboardError({
       <div className="rounded-xl border border-border bg-surface p-6">
         <h1 className="text-xl font-semibold">Something went wrong</h1>
         <p className="mt-2 text-sm text-muted">
-          We couldn’t load this page. Try again.
+          We couldn&apos;t load this page. Try again.
         </p>
         {error?.digest && (
           <p className="mt-3 text-xs text-muted">

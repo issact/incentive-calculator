@@ -64,6 +64,22 @@ export default function SaleForm() {
 
       if (code === "SALE_CODE_EXISTS") {
         form.setError("saleCode", { type: "server", message: "Sale code already exists" })
+        toast({ title: "Sale code already exists", variant: "info" })
+        return
+      }
+
+      if (code === "MANAGER_NOT_ASSIGNED") {
+        form.setError("root", {
+          type: "server",
+          message: "Your account has no manager assigned. Please contact Admin to set your reporting manager."
+        })
+
+        toast({
+          title: "Manager not assigned",
+          description: "Please contact Admin to set your reporting manager before creating a sale.",
+          variant: "error",
+        })
+        return
       }
 
       toast({
@@ -346,7 +362,7 @@ export default function SaleForm() {
 
       {mutation.isError && !getApiErrorIssues(mutation.error)?.length && (
         <div className="md:col-span-2 text-sm text-danger">
-          {getErrorMessage(mutation.error)}
+          {form.formState.errors.root?.message ?? getErrorMessage(mutation.error)}
         </div>
       )}
 
