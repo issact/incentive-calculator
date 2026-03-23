@@ -8,6 +8,15 @@ export async function createSale(data: any, userId: string) {
 
     const result = await prisma.$transaction(async (tx) => {
 
+        const user = await tx.user.findUnique({
+            where: { id: userId },
+            select: { managerId: true },
+        })
+
+        if (!user) throw HttpError.notFound("User not found", { code: "USER_NOT_FOUND" })
+        if (!user.managerId) throw HttpError.badRequest("User has no manager assigned", { code: "MANAGER_NOT_ASSIGNED" })
+
+
         const existingSale = await tx.sale.findUnique({
             where: { saleCode: data.saleCode }
         })
