@@ -5,6 +5,25 @@ import * as saleController from "../controllers/sale.controller.js"
 
 const router = Router()
 
+router.get(
+    "/",
+    requireAuth,
+    saleController.listSales
+)
+
+router.get(
+    "/:id",
+    requireAuth,
+    saleController.getSaleById
+)
+
+router.post(
+    "/:id/void",
+    requireAuth,
+    requireRole("OWNER_FINANCE"),
+    saleController.voidSale
+)
+
 router.post(
     "/",
     requireAuth,

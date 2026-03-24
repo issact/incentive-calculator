@@ -65,6 +65,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   salesCreated Sale[] @relation("SalesCreated")
+  salesVoided  Sale[] @relation("SalesVoided")
 
   incentivesOwned     Incentive[] @relation("IncentiveBeneficiary")
   incentivesSubmitted Incentive[] @relation("IncentiveSubmittedBy")
@@ -104,6 +105,11 @@ model Sale {
   createdById String
   createdBy   User   @relation("SalesCreated", fields: [createdById], references: [id])
 
+  voidedAt    DateTime?
+  voidedById  String?
+  voidedBy    User?     @relation("SalesVoided", fields: [voidedById], references: [id])
+  voidReason  String?
+
   notes String?
 
   createdAt DateTime @default(now())
@@ -115,6 +121,7 @@ model Sale {
   @@index([createdById])
   @@index([projectName])
   @@index([saleDate])
+  @@index([voidedAt])
 }
 
 model IncentiveRule {

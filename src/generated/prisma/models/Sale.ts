@@ -50,6 +50,9 @@ export type SaleMinAggregateOutputType = {
   customerPhone: string | null
   brokerChannel: $Enums.BrokerChannel | null
   createdById: string | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,6 +74,9 @@ export type SaleMaxAggregateOutputType = {
   customerPhone: string | null
   brokerChannel: $Enums.BrokerChannel | null
   createdById: string | null
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -92,6 +98,9 @@ export type SaleCountAggregateOutputType = {
   customerPhone: number
   brokerChannel: number
   createdById: number
+  voidedAt: number
+  voidedById: number
+  voidReason: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -123,6 +132,9 @@ export type SaleMinAggregateInputType = {
   customerPhone?: true
   brokerChannel?: true
   createdById?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -144,6 +156,9 @@ export type SaleMaxAggregateInputType = {
   customerPhone?: true
   brokerChannel?: true
   createdById?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -165,6 +180,9 @@ export type SaleCountAggregateInputType = {
   customerPhone?: true
   brokerChannel?: true
   createdById?: true
+  voidedAt?: true
+  voidedById?: true
+  voidReason?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -273,6 +291,9 @@ export type SaleGroupByOutputType = {
   customerPhone: string | null
   brokerChannel: $Enums.BrokerChannel | null
   createdById: string
+  voidedAt: Date | null
+  voidedById: string | null
+  voidReason: string | null
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -317,10 +338,14 @@ export type SaleWhereInput = {
   customerPhone?: Prisma.StringNullableFilter<"Sale"> | string | null
   brokerChannel?: Prisma.EnumBrokerChannelNullableFilter<"Sale"> | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFilter<"Sale"> | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
+  voidedById?: Prisma.StringNullableFilter<"Sale"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Sale"> | string | null
   notes?: Prisma.StringNullableFilter<"Sale"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   incentives?: Prisma.IncentiveListRelationFilter
   valuationSnapshots?: Prisma.ValuationSnapshotListRelationFilter
 }
@@ -341,10 +366,14 @@ export type SaleOrderByWithRelationInput = {
   customerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   brokerChannel?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   createdBy?: Prisma.UserOrderByWithRelationInput
+  voidedBy?: Prisma.UserOrderByWithRelationInput
   incentives?: Prisma.IncentiveOrderByRelationAggregateInput
   valuationSnapshots?: Prisma.ValuationSnapshotOrderByRelationAggregateInput
 }
@@ -368,10 +397,14 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   customerPhone?: Prisma.StringNullableFilter<"Sale"> | string | null
   brokerChannel?: Prisma.EnumBrokerChannelNullableFilter<"Sale"> | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFilter<"Sale"> | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
+  voidedById?: Prisma.StringNullableFilter<"Sale"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Sale"> | string | null
   notes?: Prisma.StringNullableFilter<"Sale"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  voidedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   incentives?: Prisma.IncentiveListRelationFilter
   valuationSnapshots?: Prisma.ValuationSnapshotListRelationFilter
 }, "id" | "saleCode">
@@ -392,6 +425,9 @@ export type SaleOrderByWithAggregationInput = {
   customerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   brokerChannel?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -421,6 +457,9 @@ export type SaleScalarWhereWithAggregatesInput = {
   customerPhone?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
   brokerChannel?: Prisma.EnumBrokerChannelNullableWithAggregatesFilter<"Sale"> | $Enums.BrokerChannel | null
   createdById?: Prisma.StringWithAggregatesFilter<"Sale"> | string
+  voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Sale"> | Date | string | null
+  voidedById?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
+  voidReason?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
@@ -441,10 +480,13 @@ export type SaleCreateInput = {
   customerName: string
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutSalesCreatedInput
+  voidedBy?: Prisma.UserCreateNestedOneWithoutSalesVoidedInput
   incentives?: Prisma.IncentiveCreateNestedManyWithoutSaleInput
   valuationSnapshots?: Prisma.ValuationSnapshotCreateNestedManyWithoutSaleInput
 }
@@ -465,6 +507,9 @@ export type SaleUncheckedCreateInput = {
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
   createdById: string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -487,10 +532,13 @@ export type SaleUpdateInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSalesCreatedNestedInput
+  voidedBy?: Prisma.UserUpdateOneWithoutSalesVoidedNestedInput
   incentives?: Prisma.IncentiveUpdateManyWithoutSaleNestedInput
   valuationSnapshots?: Prisma.ValuationSnapshotUpdateManyWithoutSaleNestedInput
 }
@@ -511,6 +559,9 @@ export type SaleUncheckedUpdateInput = {
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -534,6 +585,9 @@ export type SaleCreateManyInput = {
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
   createdById: string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -554,6 +608,8 @@ export type SaleUpdateManyMutationInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -575,6 +631,9 @@ export type SaleUncheckedUpdateManyInput = {
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -606,6 +665,9 @@ export type SaleCountOrderByAggregateInput = {
   customerPhone?: Prisma.SortOrder
   brokerChannel?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -631,6 +693,9 @@ export type SaleMaxOrderByAggregateInput = {
   customerPhone?: Prisma.SortOrder
   brokerChannel?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -652,6 +717,9 @@ export type SaleMinOrderByAggregateInput = {
   customerPhone?: Prisma.SortOrder
   brokerChannel?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
+  voidedAt?: Prisma.SortOrder
+  voidedById?: Prisma.SortOrder
+  voidReason?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -673,10 +741,24 @@ export type SaleCreateNestedManyWithoutCreatedByInput = {
   connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
 }
 
+export type SaleCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.SaleCreateWithoutVoidedByInput, Prisma.SaleUncheckedCreateWithoutVoidedByInput> | Prisma.SaleCreateWithoutVoidedByInput[] | Prisma.SaleUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.SaleCreateOrConnectWithoutVoidedByInput | Prisma.SaleCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.SaleCreateManyVoidedByInputEnvelope
+  connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+}
+
 export type SaleUncheckedCreateNestedManyWithoutCreatedByInput = {
   create?: Prisma.XOR<Prisma.SaleCreateWithoutCreatedByInput, Prisma.SaleUncheckedCreateWithoutCreatedByInput> | Prisma.SaleCreateWithoutCreatedByInput[] | Prisma.SaleUncheckedCreateWithoutCreatedByInput[]
   connectOrCreate?: Prisma.SaleCreateOrConnectWithoutCreatedByInput | Prisma.SaleCreateOrConnectWithoutCreatedByInput[]
   createMany?: Prisma.SaleCreateManyCreatedByInputEnvelope
+  connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+}
+
+export type SaleUncheckedCreateNestedManyWithoutVoidedByInput = {
+  create?: Prisma.XOR<Prisma.SaleCreateWithoutVoidedByInput, Prisma.SaleUncheckedCreateWithoutVoidedByInput> | Prisma.SaleCreateWithoutVoidedByInput[] | Prisma.SaleUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.SaleCreateOrConnectWithoutVoidedByInput | Prisma.SaleCreateOrConnectWithoutVoidedByInput[]
+  createMany?: Prisma.SaleCreateManyVoidedByInputEnvelope
   connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
 }
 
@@ -694,6 +776,20 @@ export type SaleUpdateManyWithoutCreatedByNestedInput = {
   deleteMany?: Prisma.SaleScalarWhereInput | Prisma.SaleScalarWhereInput[]
 }
 
+export type SaleUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.SaleCreateWithoutVoidedByInput, Prisma.SaleUncheckedCreateWithoutVoidedByInput> | Prisma.SaleCreateWithoutVoidedByInput[] | Prisma.SaleUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.SaleCreateOrConnectWithoutVoidedByInput | Prisma.SaleCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.SaleUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.SaleUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.SaleCreateManyVoidedByInputEnvelope
+  set?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  disconnect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  delete?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  update?: Prisma.SaleUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.SaleUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.SaleUpdateManyWithWhereWithoutVoidedByInput | Prisma.SaleUpdateManyWithWhereWithoutVoidedByInput[]
+  deleteMany?: Prisma.SaleScalarWhereInput | Prisma.SaleScalarWhereInput[]
+}
+
 export type SaleUncheckedUpdateManyWithoutCreatedByNestedInput = {
   create?: Prisma.XOR<Prisma.SaleCreateWithoutCreatedByInput, Prisma.SaleUncheckedCreateWithoutCreatedByInput> | Prisma.SaleCreateWithoutCreatedByInput[] | Prisma.SaleUncheckedCreateWithoutCreatedByInput[]
   connectOrCreate?: Prisma.SaleCreateOrConnectWithoutCreatedByInput | Prisma.SaleCreateOrConnectWithoutCreatedByInput[]
@@ -705,6 +801,20 @@ export type SaleUncheckedUpdateManyWithoutCreatedByNestedInput = {
   connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
   update?: Prisma.SaleUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.SaleUpdateWithWhereUniqueWithoutCreatedByInput[]
   updateMany?: Prisma.SaleUpdateManyWithWhereWithoutCreatedByInput | Prisma.SaleUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.SaleScalarWhereInput | Prisma.SaleScalarWhereInput[]
+}
+
+export type SaleUncheckedUpdateManyWithoutVoidedByNestedInput = {
+  create?: Prisma.XOR<Prisma.SaleCreateWithoutVoidedByInput, Prisma.SaleUncheckedCreateWithoutVoidedByInput> | Prisma.SaleCreateWithoutVoidedByInput[] | Prisma.SaleUncheckedCreateWithoutVoidedByInput[]
+  connectOrCreate?: Prisma.SaleCreateOrConnectWithoutVoidedByInput | Prisma.SaleCreateOrConnectWithoutVoidedByInput[]
+  upsert?: Prisma.SaleUpsertWithWhereUniqueWithoutVoidedByInput | Prisma.SaleUpsertWithWhereUniqueWithoutVoidedByInput[]
+  createMany?: Prisma.SaleCreateManyVoidedByInputEnvelope
+  set?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  disconnect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  delete?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  connect?: Prisma.SaleWhereUniqueInput | Prisma.SaleWhereUniqueInput[]
+  update?: Prisma.SaleUpdateWithWhereUniqueWithoutVoidedByInput | Prisma.SaleUpdateWithWhereUniqueWithoutVoidedByInput[]
+  updateMany?: Prisma.SaleUpdateManyWithWhereWithoutVoidedByInput | Prisma.SaleUpdateManyWithWhereWithoutVoidedByInput[]
   deleteMany?: Prisma.SaleScalarWhereInput | Prisma.SaleScalarWhereInput[]
 }
 
@@ -771,9 +881,12 @@ export type SaleCreateWithoutCreatedByInput = {
   customerName: string
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  voidedBy?: Prisma.UserCreateNestedOneWithoutSalesVoidedInput
   incentives?: Prisma.IncentiveCreateNestedManyWithoutSaleInput
   valuationSnapshots?: Prisma.ValuationSnapshotCreateNestedManyWithoutSaleInput
 }
@@ -793,6 +906,9 @@ export type SaleUncheckedCreateWithoutCreatedByInput = {
   customerName: string
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -807,6 +923,66 @@ export type SaleCreateOrConnectWithoutCreatedByInput = {
 
 export type SaleCreateManyCreatedByInputEnvelope = {
   data: Prisma.SaleCreateManyCreatedByInput | Prisma.SaleCreateManyCreatedByInput[]
+  skipDuplicates?: boolean
+}
+
+export type SaleCreateWithoutVoidedByInput = {
+  id?: string
+  saleCode: string
+  saleDate: Date | string
+  bookingDate?: Date | string | null
+  closeDate?: Date | string | null
+  projectName: string
+  propertyType: $Enums.PropertyType
+  unitNumber?: string | null
+  city: string
+  state: string
+  saleValue: bigint | number
+  customerName: string
+  customerPhone?: string | null
+  brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: Prisma.UserCreateNestedOneWithoutSalesCreatedInput
+  incentives?: Prisma.IncentiveCreateNestedManyWithoutSaleInput
+  valuationSnapshots?: Prisma.ValuationSnapshotCreateNestedManyWithoutSaleInput
+}
+
+export type SaleUncheckedCreateWithoutVoidedByInput = {
+  id?: string
+  saleCode: string
+  saleDate: Date | string
+  bookingDate?: Date | string | null
+  closeDate?: Date | string | null
+  projectName: string
+  propertyType: $Enums.PropertyType
+  unitNumber?: string | null
+  city: string
+  state: string
+  saleValue: bigint | number
+  customerName: string
+  customerPhone?: string | null
+  brokerChannel?: $Enums.BrokerChannel | null
+  createdById: string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  incentives?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSaleInput
+  valuationSnapshots?: Prisma.ValuationSnapshotUncheckedCreateNestedManyWithoutSaleInput
+}
+
+export type SaleCreateOrConnectWithoutVoidedByInput = {
+  where: Prisma.SaleWhereUniqueInput
+  create: Prisma.XOR<Prisma.SaleCreateWithoutVoidedByInput, Prisma.SaleUncheckedCreateWithoutVoidedByInput>
+}
+
+export type SaleCreateManyVoidedByInputEnvelope = {
+  data: Prisma.SaleCreateManyVoidedByInput | Prisma.SaleCreateManyVoidedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -845,9 +1021,28 @@ export type SaleScalarWhereInput = {
   customerPhone?: Prisma.StringNullableFilter<"Sale"> | string | null
   brokerChannel?: Prisma.EnumBrokerChannelNullableFilter<"Sale"> | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFilter<"Sale"> | string
+  voidedAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
+  voidedById?: Prisma.StringNullableFilter<"Sale"> | string | null
+  voidReason?: Prisma.StringNullableFilter<"Sale"> | string | null
   notes?: Prisma.StringNullableFilter<"Sale"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
+}
+
+export type SaleUpsertWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.SaleWhereUniqueInput
+  update: Prisma.XOR<Prisma.SaleUpdateWithoutVoidedByInput, Prisma.SaleUncheckedUpdateWithoutVoidedByInput>
+  create: Prisma.XOR<Prisma.SaleCreateWithoutVoidedByInput, Prisma.SaleUncheckedCreateWithoutVoidedByInput>
+}
+
+export type SaleUpdateWithWhereUniqueWithoutVoidedByInput = {
+  where: Prisma.SaleWhereUniqueInput
+  data: Prisma.XOR<Prisma.SaleUpdateWithoutVoidedByInput, Prisma.SaleUncheckedUpdateWithoutVoidedByInput>
+}
+
+export type SaleUpdateManyWithWhereWithoutVoidedByInput = {
+  where: Prisma.SaleScalarWhereInput
+  data: Prisma.XOR<Prisma.SaleUpdateManyMutationInput, Prisma.SaleUncheckedUpdateManyWithoutVoidedByInput>
 }
 
 export type SaleCreateWithoutIncentivesInput = {
@@ -865,10 +1060,13 @@ export type SaleCreateWithoutIncentivesInput = {
   customerName: string
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutSalesCreatedInput
+  voidedBy?: Prisma.UserCreateNestedOneWithoutSalesVoidedInput
   valuationSnapshots?: Prisma.ValuationSnapshotCreateNestedManyWithoutSaleInput
 }
 
@@ -888,6 +1086,9 @@ export type SaleUncheckedCreateWithoutIncentivesInput = {
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
   createdById: string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -925,10 +1126,13 @@ export type SaleUpdateWithoutIncentivesInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSalesCreatedNestedInput
+  voidedBy?: Prisma.UserUpdateOneWithoutSalesVoidedNestedInput
   valuationSnapshots?: Prisma.ValuationSnapshotUpdateManyWithoutSaleNestedInput
 }
 
@@ -948,6 +1152,9 @@ export type SaleUncheckedUpdateWithoutIncentivesInput = {
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -969,10 +1176,13 @@ export type SaleCreateWithoutValuationSnapshotsInput = {
   customerName: string
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   createdBy: Prisma.UserCreateNestedOneWithoutSalesCreatedInput
+  voidedBy?: Prisma.UserCreateNestedOneWithoutSalesVoidedInput
   incentives?: Prisma.IncentiveCreateNestedManyWithoutSaleInput
 }
 
@@ -992,6 +1202,9 @@ export type SaleUncheckedCreateWithoutValuationSnapshotsInput = {
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
   createdById: string
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1029,10 +1242,13 @@ export type SaleUpdateWithoutValuationSnapshotsInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.UserUpdateOneRequiredWithoutSalesCreatedNestedInput
+  voidedBy?: Prisma.UserUpdateOneWithoutSalesVoidedNestedInput
   incentives?: Prisma.IncentiveUpdateManyWithoutSaleNestedInput
 }
 
@@ -1052,6 +1268,9 @@ export type SaleUncheckedUpdateWithoutValuationSnapshotsInput = {
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1073,6 +1292,32 @@ export type SaleCreateManyCreatedByInput = {
   customerName: string
   customerPhone?: string | null
   brokerChannel?: $Enums.BrokerChannel | null
+  voidedAt?: Date | string | null
+  voidedById?: string | null
+  voidReason?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SaleCreateManyVoidedByInput = {
+  id?: string
+  saleCode: string
+  saleDate: Date | string
+  bookingDate?: Date | string | null
+  closeDate?: Date | string | null
+  projectName: string
+  propertyType: $Enums.PropertyType
+  unitNumber?: string | null
+  city: string
+  state: string
+  saleValue: bigint | number
+  customerName: string
+  customerPhone?: string | null
+  brokerChannel?: $Enums.BrokerChannel | null
+  createdById: string
+  voidedAt?: Date | string | null
+  voidReason?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1093,9 +1338,12 @@ export type SaleUpdateWithoutCreatedByInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  voidedBy?: Prisma.UserUpdateOneWithoutSalesVoidedNestedInput
   incentives?: Prisma.IncentiveUpdateManyWithoutSaleNestedInput
   valuationSnapshots?: Prisma.ValuationSnapshotUpdateManyWithoutSaleNestedInput
 }
@@ -1115,6 +1363,9 @@ export type SaleUncheckedUpdateWithoutCreatedByInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1137,6 +1388,82 @@ export type SaleUncheckedUpdateManyWithoutCreatedByInput = {
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SaleUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  saleCode?: Prisma.StringFieldUpdateOperationsInput | string
+  saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  projectName?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+  unitNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  saleValue?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSalesCreatedNestedInput
+  incentives?: Prisma.IncentiveUpdateManyWithoutSaleNestedInput
+  valuationSnapshots?: Prisma.ValuationSnapshotUpdateManyWithoutSaleNestedInput
+}
+
+export type SaleUncheckedUpdateWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  saleCode?: Prisma.StringFieldUpdateOperationsInput | string
+  saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  projectName?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+  unitNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  saleValue?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  incentives?: Prisma.IncentiveUncheckedUpdateManyWithoutSaleNestedInput
+  valuationSnapshots?: Prisma.ValuationSnapshotUncheckedUpdateManyWithoutSaleNestedInput
+}
+
+export type SaleUncheckedUpdateManyWithoutVoidedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  saleCode?: Prisma.StringFieldUpdateOperationsInput | string
+  saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  closeDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  projectName?: Prisma.StringFieldUpdateOperationsInput | string
+  propertyType?: Prisma.EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+  unitNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  saleValue?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  customerName?: Prisma.StringFieldUpdateOperationsInput | string
+  customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brokerChannel?: Prisma.NullableEnumBrokerChannelFieldUpdateOperationsInput | $Enums.BrokerChannel | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1198,10 +1525,14 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   customerPhone?: boolean
   brokerChannel?: boolean
   createdById?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.Sale$voidedByArgs<ExtArgs>
   incentives?: boolean | Prisma.Sale$incentivesArgs<ExtArgs>
   valuationSnapshots?: boolean | Prisma.Sale$valuationSnapshotsArgs<ExtArgs>
   _count?: boolean | Prisma.SaleCountOutputTypeDefaultArgs<ExtArgs>
@@ -1223,10 +1554,14 @@ export type SaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   customerPhone?: boolean
   brokerChannel?: boolean
   createdById?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.Sale$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
 
 export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1245,10 +1580,14 @@ export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   customerPhone?: boolean
   brokerChannel?: boolean
   createdById?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.Sale$voidedByArgs<ExtArgs>
 }, ExtArgs["result"]["sale"]>
 
 export type SaleSelectScalar = {
@@ -1267,29 +1606,36 @@ export type SaleSelectScalar = {
   customerPhone?: boolean
   brokerChannel?: boolean
   createdById?: boolean
+  voidedAt?: boolean
+  voidedById?: boolean
+  voidReason?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleCode" | "saleDate" | "bookingDate" | "closeDate" | "projectName" | "propertyType" | "unitNumber" | "city" | "state" | "saleValue" | "customerName" | "customerPhone" | "brokerChannel" | "createdById" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["sale"]>
+export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleCode" | "saleDate" | "bookingDate" | "closeDate" | "projectName" | "propertyType" | "unitNumber" | "city" | "state" | "saleValue" | "customerName" | "customerPhone" | "brokerChannel" | "createdById" | "voidedAt" | "voidedById" | "voidReason" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["sale"]>
 export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.Sale$voidedByArgs<ExtArgs>
   incentives?: boolean | Prisma.Sale$incentivesArgs<ExtArgs>
   valuationSnapshots?: boolean | Prisma.Sale$valuationSnapshotsArgs<ExtArgs>
   _count?: boolean | Prisma.SaleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SaleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.Sale$voidedByArgs<ExtArgs>
 }
 export type SaleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  voidedBy?: boolean | Prisma.Sale$voidedByArgs<ExtArgs>
 }
 
 export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Sale"
   objects: {
     createdBy: Prisma.$UserPayload<ExtArgs>
+    voidedBy: Prisma.$UserPayload<ExtArgs> | null
     incentives: Prisma.$IncentivePayload<ExtArgs>[]
     valuationSnapshots: Prisma.$ValuationSnapshotPayload<ExtArgs>[]
   }
@@ -1309,6 +1655,9 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     customerPhone: string | null
     brokerChannel: $Enums.BrokerChannel | null
     createdById: string
+    voidedAt: Date | null
+    voidedById: string | null
+    voidReason: string | null
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -1707,6 +2056,7 @@ readonly fields: SaleFieldRefs;
 export interface Prisma__SaleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  voidedBy<T extends Prisma.Sale$voidedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$voidedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   incentives<T extends Prisma.Sale$incentivesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$incentivesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncentivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   valuationSnapshots<T extends Prisma.Sale$valuationSnapshotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sale$valuationSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ValuationSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1753,6 +2103,9 @@ export interface SaleFieldRefs {
   readonly customerPhone: Prisma.FieldRef<"Sale", 'String'>
   readonly brokerChannel: Prisma.FieldRef<"Sale", 'BrokerChannel'>
   readonly createdById: Prisma.FieldRef<"Sale", 'String'>
+  readonly voidedAt: Prisma.FieldRef<"Sale", 'DateTime'>
+  readonly voidedById: Prisma.FieldRef<"Sale", 'String'>
+  readonly voidReason: Prisma.FieldRef<"Sale", 'String'>
   readonly notes: Prisma.FieldRef<"Sale", 'String'>
   readonly createdAt: Prisma.FieldRef<"Sale", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Sale", 'DateTime'>
@@ -2149,6 +2502,25 @@ export type SaleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Sales to delete.
    */
   limit?: number
+}
+
+/**
+ * Sale.voidedBy
+ */
+export type Sale$voidedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
 }
 
 /**

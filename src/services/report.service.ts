@@ -82,6 +82,7 @@ export async function getIncentiveReport(
     AND: [
       baseWhere,
       { beneficiaryUserId: user.id },
+      ...(!query.includeVoided ? [{ sale: { voidedAt: null } }] : []),
       {
         status: {
           in: ["CLAIMABLE", "CLAIM_REQUESTED", "PAID"]
@@ -94,7 +95,7 @@ export async function getIncentiveReport(
   const take = query.limit
   const orderBy = buildIncentiveOrderBy(query.sortBy, query.sortOrder)
 
-  const [data, total] = await prisma.$transaction([
+  const [data, total] = await Promise.all([
     prisma.incentive.findMany({
       where,
       include: {
@@ -113,44 +114,46 @@ export async function getIncentiveReport(
 }
 
 export async function getDashboardStats(userId: string) {
-  const [totalEarned, claimable, pendingReview, paid] =
-    await prisma.$transaction([
+  const [totalEarned, claimable, pendingReview, paid] = await Promise.all([
 
-      prisma.incentive.aggregate({
-        where: { beneficiaryUserId: userId },
-        _sum: { finalAmount: true }
-      }),
+    prisma.incentive.aggregate({
+      where: { beneficiaryUserId: userId, sale: { voidedAt: null } },
+      _sum: { finalAmount: true }
+    }),
 
-      prisma.incentive.aggregate({
-        where: {
-          beneficiaryUserId: userId,
-          status: "CLAIMABLE"
-        },
-        _sum: { finalAmount: true }
-      }),
+    prisma.incentive.aggregate({
+      where: {
+        beneficiaryUserId: userId,
+        sale: { voidedAt: null },
+        status: "CLAIMABLE"
+      },
+      _sum: { finalAmount: true }
+    }),
 
-      prisma.incentive.aggregate({
-        where: {
-          beneficiaryUserId: userId,
-          status: "PENDING_REVIEW"
-        },
-        _sum: { finalAmount: true }
-      }),
+    prisma.incentive.aggregate({
+      where: {
+        beneficiaryUserId: userId,
+        sale: { voidedAt: null },
+        status: "PENDING_REVIEW"
+      },
+      _sum: { finalAmount: true }
+    }),
 
-      prisma.incentive.aggregate({
-        where: {
-          beneficiaryUserId: userId,
-          status: "PAID"
-        },
-        _sum: { finalAmount: true }
-      })
+    prisma.incentive.aggregate({
+      where: {
+        beneficiaryUserId: userId,
+        sale: { voidedAt: null },
+        status: "PAID"
+      },
+      _sum: { finalAmount: true }
+    })
 
-    ])
+  ])
 
   return {
-    totalEarned: Number(totalEarned._sum.finalAmount ?? 0),
-    claimable: Number(claimable._sum.finalAmount ?? 0),
-    pendingReview: Number(pendingReview._sum.finalAmount ?? 0),
-    paid: Number(paid._sum.finalAmount ?? 0)
+    totalEarned: Number(totalEarned._sum?.finalAmount ?? 0),
+    claimable: Number(claimable._sum?.finalAmount ?? 0),
+    pendingReview: Number(pendingReview._sum?.finalAmount ?? 0),
+    paid: Number(paid._sum?.finalAmount ?? 0)
   }
 }

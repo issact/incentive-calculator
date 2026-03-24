@@ -32,3 +32,7 @@ export const createSaleSchema = z.object({
 
     notes: z.string().optional()
 })
+
+export const voidSaleSchema = z.object({
+    reason: z.string().min(3, "Reason is required").max(500)
+})

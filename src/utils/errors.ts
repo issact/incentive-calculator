@@ -22,7 +22,7 @@ export class HttpError extends Error {
 
         // Node 16+ supports cause in Error options, but keep it runtime-safe.
         if (opts?.cause !== undefined) {
-            ;(this as any).cause = opts.cause
+            this.cause = opts.cause
         }
     }
 
@@ -55,6 +55,17 @@ function looksLikeConflictMessage(message: string) {
     return message.toLowerCase().includes("already exists")
 }
 
+function looksLikeDatabaseUnavailable(message: string) {
+    const msg = message.toLowerCase()
+    return (
+        msg.includes("unable to start a transaction") ||
+        msg.includes("can't reach database server") ||
+        msg.includes("connection") && msg.includes("timeout") ||
+        msg.includes("econnrefused") ||
+        msg.includes("enotfound")
+    )
+}
+
 export function toHttpError(err: unknown, fallback: { status: number; message: string }): HttpError {
     if (err instanceof HttpError) return err
 
@@ -76,7 +87,7 @@ export function toHttpError(err: unknown, fallback: { status: number; message: s
         if (err.code === "P2002") {
             return HttpError.conflict("Unique constraint failed", {
                 code: "PRISMA_P2002",
-                issues: (err.meta as any) ?? undefined,
+                issues: err.meta ?? undefined,
                 cause: err
             })
         }
@@ -89,12 +100,26 @@ export function toHttpError(err: unknown, fallback: { status: number; message: s
         return HttpError.badRequest("Invalid request", { code: "PRISMA_VALIDATION_ERROR", cause: err })
     }
 
+    // Prisma connectivity / engine errors (common when DB is down)
+    if (
+        err instanceof Prisma.PrismaClientInitializationError ||
+        err instanceof Prisma.PrismaClientUnknownRequestError
+    ) {
+        return new HttpError(503, "Database unavailable", {
+            code: "DATABASE_UNAVAILABLE",
+            cause: err
+        })
+    }
+
     if (err instanceof Error) {
         if (looksLikeBadRequestMessage(err.message)) {
             return HttpError.badRequest(err.message, { code: "BAD_REQUEST", cause: err })
         }
         if (looksLikeConflictMessage(err.message)) {
             return HttpError.conflict(err.message, { code: "CONFLICT", cause: err })
+        }
+        if (looksLikeDatabaseUnavailable(err.message)) {
+            return new HttpError(503, "Database unavailable", { code: "DATABASE_UNAVAILABLE", cause: err })
         }
         return new HttpError(fallback.status, err.message || fallback.message, { cause: err })
     }

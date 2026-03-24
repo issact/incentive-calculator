@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma"
 import { IncentiveStatus, type Prisma } from "../generated/prisma/client"
 import type { IncentiveListQuery, SortOrder } from "../utils/pagination"
+import { HttpError } from "../utils/errors.js"
 
 function buildOrderBy(sortBy: string | undefined, sortOrder: SortOrder) {
     switch (sortBy) {
@@ -16,7 +17,8 @@ function buildOrderBy(sortBy: string | undefined, sortOrder: SortOrder) {
 export async function getPaymentQueue(query: IncentiveListQuery) {
 
     const where: Prisma.IncentiveWhereInput = {
-        status: IncentiveStatus.CLAIM_REQUESTED
+        status: IncentiveStatus.CLAIM_REQUESTED,
+        ...(!query.includeVoided ? ({ sale: { voidedAt: null } }) : {})
     }
 
     const skip = (query.page - 1) * query.limit
@@ -72,7 +74,8 @@ export async function getPaymentDetail(incentiveId: string) {
                 select: {
                     saleCode: true,
                     projectName: true,
-                    customerName: true
+                    customerName: true,
+                    voidedAt: true
                 }
             },
             beneficiaryUser: {
@@ -86,12 +89,16 @@ export async function getPaymentDetail(incentiveId: string) {
     })
 
     if (!incentive) {
-        throw new Error("Incentive not found")
+        throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
+    }
+
+    if (incentive.sale.voidedAt && incentive.status !== IncentiveStatus.PAID) {
+        throw HttpError.conflict("Sale is voided. Action not allowed.", { code: "SALE_VOIDED" })
     }
 
     if (incentive.status !== IncentiveStatus.CLAIM_REQUESTED &&
         incentive.status !== IncentiveStatus.PAID) {
-        throw new Error("Not available for payment view")
+        throw HttpError.badRequest("Not available for payment view", { code: "INCENTIVE_NOT_PAYABLE_VIEW" })
     }
 
     return incentive

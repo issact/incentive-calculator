@@ -235,6 +235,7 @@ export async function getMyIncentives(userId: string, query: IncentiveListQuery)
 
         additional: {
             AND: [
+                ...(!query.includeVoided ? [{ sale: { voidedAt: null } }] : []),
                 { beneficiaryUserId: userId },
                 { level: myLevel },
                 ...(visibilityConditions.length ? [{ OR: visibilityConditions }] : [])
@@ -316,6 +317,7 @@ export async function getReviewQueue(userId: string, query: IncentiveListQuery) 
         additional: {
             reviewerUserId: userId,
             AND: [
+                ...(!query.includeVoided ? [{ sale: { voidedAt: null } }] : []),
                 {
                     OR: [
                         { status: IncentiveStatus.PENDING_REVIEW },
@@ -485,6 +487,9 @@ export async function approveIncentive(
         const incentive = await tx.incentive.findUnique({
             where: { id: incentiveId },
             include: {
+                sale: {
+                    select: { voidedAt: true }
+                },
                 reviewer: {
                     select: { role: true }
                 }
@@ -493,6 +498,10 @@ export async function approveIncentive(
 
         if (!incentive) {
             throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
+        }
+
+        if (incentive.sale.voidedAt) {
+            throw HttpError.conflict("Sale is voided. Action not allowed.", { code: "SALE_VOIDED" })
         }
 
         if (incentive.reviewerUserId !== actorId) {
@@ -508,8 +517,9 @@ export async function approveIncentive(
         }
 
         const reviewerRole = incentive.reviewer.role
+        const level = incentive.level as IncentiveLevel
 
-        if (reviewerRole !== REVIEW_ROLE_BY_LEVEL[incentive.level]) {
+        if (reviewerRole !== REVIEW_ROLE_BY_LEVEL[level]) {
             throw HttpError.forbidden("Reviewer role not allowed for this incentive level", { code: "REVIEWER_ROLE_NOT_ALLOWED" })
         }
 
@@ -521,7 +531,7 @@ export async function approveIncentive(
             throw HttpError.badRequest("Incentive not in review state", { code: "INCENTIVE_NOT_IN_REVIEW" })
         }
 
-        const index = LEVEL_ORDER.indexOf(incentive.level)
+        const index = LEVEL_ORDER.indexOf(level)
 
         const lowerLevels = LEVEL_ORDER.slice(0, index)
 
@@ -619,11 +629,20 @@ export async function holdIncentive(
     const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
-            where: { id: incentiveId }
+            where: { id: incentiveId },
+            include: {
+                sale: {
+                    select: { voidedAt: true }
+                }
+            }
         })
 
         if (!incentive) {
             throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
+        }
+
+        if (incentive.sale.voidedAt) {
+            throw HttpError.conflict("Sale is voided. Action not allowed.", { code: "SALE_VOIDED" })
         }
 
         if (incentive.reviewerUserId !== actorId) {
@@ -676,11 +695,20 @@ export async function reopenIncentive(
     const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
-            where: { id: incentiveId }
+            where: { id: incentiveId },
+            include: {
+                sale: {
+                    select: { voidedAt: true }
+                }
+            }
         })
 
         if (!incentive) {
             throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
+        }
+
+        if (incentive.sale.voidedAt) {
+            throw HttpError.conflict("Sale is voided. Action not allowed.", { code: "SALE_VOIDED" })
         }
 
         if (incentive.status !== IncentiveStatus.ON_HOLD) {
@@ -743,11 +771,20 @@ export async function claimIncentive(
         }
 
         const incentive = await tx.incentive.findUnique({
-            where: { id: incentiveId }
+            where: { id: incentiveId },
+            include: {
+                sale: {
+                    select: { voidedAt: true }
+                }
+            }
         })
 
         if (!incentive) {
             throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
+        }
+
+        if (incentive.sale.voidedAt) {
+            throw HttpError.conflict("Sale is voided. Action not allowed.", { code: "SALE_VOIDED" })
         }
 
         if (incentive.beneficiaryUserId !== actorId) {
@@ -805,11 +842,20 @@ export async function markPaid(
     const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
         const incentive = await tx.incentive.findUnique({
-            where: { id: incentiveId }
+            where: { id: incentiveId },
+            include: {
+                sale: {
+                    select: { voidedAt: true }
+                }
+            }
         })
 
         if (!incentive) {
             throw HttpError.notFound("Incentive not found", { code: "INCENTIVE_NOT_FOUND" })
+        }
+
+        if (incentive.sale.voidedAt) {
+            throw HttpError.conflict("Sale is voided. Action not allowed.", { code: "SALE_VOIDED" })
         }
         if (incentive.status === IncentiveStatus.PAID) {
             throw HttpError.badRequest("Incentive already paid", { code: "INCENTIVE_ALREADY_PAID" })

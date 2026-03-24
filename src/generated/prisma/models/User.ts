@@ -225,6 +225,7 @@ export type UserWhereInput = {
   manager?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   reports?: Prisma.UserListRelationFilter
   salesCreated?: Prisma.SaleListRelationFilter
+  salesVoided?: Prisma.SaleListRelationFilter
   incentivesOwned?: Prisma.IncentiveListRelationFilter
   incentivesSubmitted?: Prisma.IncentiveListRelationFilter
   incentivesToReview?: Prisma.IncentiveListRelationFilter
@@ -248,6 +249,7 @@ export type UserOrderByWithRelationInput = {
   manager?: Prisma.UserOrderByWithRelationInput
   reports?: Prisma.UserOrderByRelationAggregateInput
   salesCreated?: Prisma.SaleOrderByRelationAggregateInput
+  salesVoided?: Prisma.SaleOrderByRelationAggregateInput
   incentivesOwned?: Prisma.IncentiveOrderByRelationAggregateInput
   incentivesSubmitted?: Prisma.IncentiveOrderByRelationAggregateInput
   incentivesToReview?: Prisma.IncentiveOrderByRelationAggregateInput
@@ -274,6 +276,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   manager?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   reports?: Prisma.UserListRelationFilter
   salesCreated?: Prisma.SaleListRelationFilter
+  salesVoided?: Prisma.SaleListRelationFilter
   incentivesOwned?: Prisma.IncentiveListRelationFilter
   incentivesSubmitted?: Prisma.IncentiveListRelationFilter
   incentivesToReview?: Prisma.IncentiveListRelationFilter
@@ -328,6 +331,7 @@ export type UserCreateInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -350,6 +354,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -372,6 +377,7 @@ export type UserUpdateInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -394,6 +400,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -584,12 +591,28 @@ export type UserCreateNestedOneWithoutSalesCreatedInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutSalesVoidedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSalesVoidedInput, Prisma.UserUncheckedCreateWithoutSalesVoidedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSalesVoidedInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneRequiredWithoutSalesCreatedNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSalesCreatedInput, Prisma.UserUncheckedCreateWithoutSalesCreatedInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSalesCreatedInput
   upsert?: Prisma.UserUpsertWithoutSalesCreatedInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSalesCreatedInput, Prisma.UserUpdateWithoutSalesCreatedInput>, Prisma.UserUncheckedUpdateWithoutSalesCreatedInput>
+}
+
+export type UserUpdateOneWithoutSalesVoidedNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSalesVoidedInput, Prisma.UserUncheckedCreateWithoutSalesVoidedInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSalesVoidedInput
+  upsert?: Prisma.UserUpsertWithoutSalesVoidedInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSalesVoidedInput, Prisma.UserUpdateWithoutSalesVoidedInput>, Prisma.UserUncheckedUpdateWithoutSalesVoidedInput>
 }
 
 export type UserCreateNestedOneWithoutIncentivesOwnedInput = {
@@ -706,6 +729,7 @@ export type UserCreateWithoutReportsInput = {
   updatedAt?: Date | string
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -727,6 +751,7 @@ export type UserUncheckedCreateWithoutReportsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -753,6 +778,7 @@ export type UserCreateWithoutManagerInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -774,6 +800,7 @@ export type UserUncheckedCreateWithoutManagerInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -816,6 +843,7 @@ export type UserUpdateWithoutReportsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -837,6 +865,7 @@ export type UserUncheckedUpdateWithoutReportsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -890,6 +919,7 @@ export type UserCreateWithoutSalesCreatedInput = {
   updatedAt?: Date | string
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -911,6 +941,7 @@ export type UserUncheckedCreateWithoutSalesCreatedInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -923,6 +954,55 @@ export type UserUncheckedCreateWithoutSalesCreatedInput = {
 export type UserCreateOrConnectWithoutSalesCreatedInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutSalesCreatedInput, Prisma.UserUncheckedCreateWithoutSalesCreatedInput>
+}
+
+export type UserCreateWithoutSalesVoidedInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  role: $Enums.UserRole
+  avatarUrl?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  manager?: Prisma.UserCreateNestedOneWithoutReportsInput
+  reports?: Prisma.UserCreateNestedManyWithoutManagerInput
+  salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
+  incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
+  incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
+  holdsPlaced?: Prisma.IncentiveCreateNestedManyWithoutHeldByInput
+  approvalsGiven?: Prisma.IncentiveCreateNestedManyWithoutApprovedByInput
+  events?: Prisma.IncentiveEventCreateNestedManyWithoutActorUserInput
+  kpis?: Prisma.EmployeeKPICreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSalesVoidedInput = {
+  id?: string
+  name: string
+  email: string
+  password: string
+  role: $Enums.UserRole
+  managerId?: string | null
+  avatarUrl?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
+  salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
+  incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
+  incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
+  holdsPlaced?: Prisma.IncentiveUncheckedCreateNestedManyWithoutHeldByInput
+  approvalsGiven?: Prisma.IncentiveUncheckedCreateNestedManyWithoutApprovedByInput
+  events?: Prisma.IncentiveEventUncheckedCreateNestedManyWithoutActorUserInput
+  kpis?: Prisma.EmployeeKPIUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSalesVoidedInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSalesVoidedInput, Prisma.UserUncheckedCreateWithoutSalesVoidedInput>
 }
 
 export type UserUpsertWithoutSalesCreatedInput = {
@@ -948,6 +1028,7 @@ export type UserUpdateWithoutSalesCreatedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -969,6 +1050,62 @@ export type UserUncheckedUpdateWithoutSalesCreatedInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
+  incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
+  incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
+  incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
+  holdsPlaced?: Prisma.IncentiveUncheckedUpdateManyWithoutHeldByNestedInput
+  approvalsGiven?: Prisma.IncentiveUncheckedUpdateManyWithoutApprovedByNestedInput
+  events?: Prisma.IncentiveEventUncheckedUpdateManyWithoutActorUserNestedInput
+  kpis?: Prisma.EmployeeKPIUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutSalesVoidedInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSalesVoidedInput, Prisma.UserUncheckedUpdateWithoutSalesVoidedInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSalesVoidedInput, Prisma.UserUncheckedCreateWithoutSalesVoidedInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSalesVoidedInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSalesVoidedInput, Prisma.UserUncheckedUpdateWithoutSalesVoidedInput>
+}
+
+export type UserUpdateWithoutSalesVoidedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
+  reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
+  salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
+  incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
+  incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
+  holdsPlaced?: Prisma.IncentiveUpdateManyWithoutHeldByNestedInput
+  approvalsGiven?: Prisma.IncentiveUpdateManyWithoutApprovedByNestedInput
+  events?: Prisma.IncentiveEventUpdateManyWithoutActorUserNestedInput
+  kpis?: Prisma.EmployeeKPIUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSalesVoidedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  managerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
+  salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -991,6 +1128,7 @@ export type UserCreateWithoutIncentivesOwnedInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
   holdsPlaced?: Prisma.IncentiveCreateNestedManyWithoutHeldByInput
@@ -1012,6 +1150,7 @@ export type UserUncheckedCreateWithoutIncentivesOwnedInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
   holdsPlaced?: Prisma.IncentiveUncheckedCreateNestedManyWithoutHeldByInput
@@ -1038,6 +1177,7 @@ export type UserCreateWithoutIncentivesSubmittedInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
   holdsPlaced?: Prisma.IncentiveCreateNestedManyWithoutHeldByInput
@@ -1059,6 +1199,7 @@ export type UserUncheckedCreateWithoutIncentivesSubmittedInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
   holdsPlaced?: Prisma.IncentiveUncheckedCreateNestedManyWithoutHeldByInput
@@ -1085,6 +1226,7 @@ export type UserCreateWithoutIncentivesToReviewInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   holdsPlaced?: Prisma.IncentiveCreateNestedManyWithoutHeldByInput
@@ -1106,6 +1248,7 @@ export type UserUncheckedCreateWithoutIncentivesToReviewInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   holdsPlaced?: Prisma.IncentiveUncheckedCreateNestedManyWithoutHeldByInput
@@ -1132,6 +1275,7 @@ export type UserCreateWithoutHoldsPlacedInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -1153,6 +1297,7 @@ export type UserUncheckedCreateWithoutHoldsPlacedInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -1179,6 +1324,7 @@ export type UserCreateWithoutApprovalsGivenInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -1200,6 +1346,7 @@ export type UserUncheckedCreateWithoutApprovalsGivenInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -1237,6 +1384,7 @@ export type UserUpdateWithoutIncentivesOwnedInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
   holdsPlaced?: Prisma.IncentiveUpdateManyWithoutHeldByNestedInput
@@ -1258,6 +1406,7 @@ export type UserUncheckedUpdateWithoutIncentivesOwnedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
   holdsPlaced?: Prisma.IncentiveUncheckedUpdateManyWithoutHeldByNestedInput
@@ -1290,6 +1439,7 @@ export type UserUpdateWithoutIncentivesSubmittedInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
   holdsPlaced?: Prisma.IncentiveUpdateManyWithoutHeldByNestedInput
@@ -1311,6 +1461,7 @@ export type UserUncheckedUpdateWithoutIncentivesSubmittedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
   holdsPlaced?: Prisma.IncentiveUncheckedUpdateManyWithoutHeldByNestedInput
@@ -1343,6 +1494,7 @@ export type UserUpdateWithoutIncentivesToReviewInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   holdsPlaced?: Prisma.IncentiveUpdateManyWithoutHeldByNestedInput
@@ -1364,6 +1516,7 @@ export type UserUncheckedUpdateWithoutIncentivesToReviewInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   holdsPlaced?: Prisma.IncentiveUncheckedUpdateManyWithoutHeldByNestedInput
@@ -1396,6 +1549,7 @@ export type UserUpdateWithoutHoldsPlacedInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -1417,6 +1571,7 @@ export type UserUncheckedUpdateWithoutHoldsPlacedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1449,6 +1604,7 @@ export type UserUpdateWithoutApprovalsGivenInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -1470,6 +1626,7 @@ export type UserUncheckedUpdateWithoutApprovalsGivenInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1491,6 +1648,7 @@ export type UserCreateWithoutEventsInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -1512,6 +1670,7 @@ export type UserUncheckedCreateWithoutEventsInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -1549,6 +1708,7 @@ export type UserUpdateWithoutEventsInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -1570,6 +1730,7 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1591,6 +1752,7 @@ export type UserCreateWithoutKpisInput = {
   manager?: Prisma.UserCreateNestedOneWithoutReportsInput
   reports?: Prisma.UserCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveCreateNestedManyWithoutReviewerInput
@@ -1612,6 +1774,7 @@ export type UserUncheckedCreateWithoutKpisInput = {
   updatedAt?: Date | string
   reports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput
   salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesVoided?: Prisma.SaleUncheckedCreateNestedManyWithoutVoidedByInput
   incentivesOwned?: Prisma.IncentiveUncheckedCreateNestedManyWithoutBeneficiaryUserInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedCreateNestedManyWithoutSubmittedByInput
   incentivesToReview?: Prisma.IncentiveUncheckedCreateNestedManyWithoutReviewerInput
@@ -1649,6 +1812,7 @@ export type UserUpdateWithoutKpisInput = {
   manager?: Prisma.UserUpdateOneWithoutReportsNestedInput
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -1670,6 +1834,7 @@ export type UserUncheckedUpdateWithoutKpisInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1702,6 +1867,7 @@ export type UserUpdateWithoutManagerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUpdateManyWithoutReviewerNestedInput
@@ -1723,6 +1889,7 @@ export type UserUncheckedUpdateWithoutManagerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput
   salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesVoided?: Prisma.SaleUncheckedUpdateManyWithoutVoidedByNestedInput
   incentivesOwned?: Prisma.IncentiveUncheckedUpdateManyWithoutBeneficiaryUserNestedInput
   incentivesSubmitted?: Prisma.IncentiveUncheckedUpdateManyWithoutSubmittedByNestedInput
   incentivesToReview?: Prisma.IncentiveUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1752,6 +1919,7 @@ export type UserUncheckedUpdateManyWithoutManagerInput = {
 export type UserCountOutputType = {
   reports: number
   salesCreated: number
+  salesVoided: number
   incentivesOwned: number
   incentivesSubmitted: number
   incentivesToReview: number
@@ -1764,6 +1932,7 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reports?: boolean | UserCountOutputTypeCountReportsArgs
   salesCreated?: boolean | UserCountOutputTypeCountSalesCreatedArgs
+  salesVoided?: boolean | UserCountOutputTypeCountSalesVoidedArgs
   incentivesOwned?: boolean | UserCountOutputTypeCountIncentivesOwnedArgs
   incentivesSubmitted?: boolean | UserCountOutputTypeCountIncentivesSubmittedArgs
   incentivesToReview?: boolean | UserCountOutputTypeCountIncentivesToReviewArgs
@@ -1794,6 +1963,13 @@ export type UserCountOutputTypeCountReportsArgs<ExtArgs extends runtime.Types.Ex
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountSalesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSalesVoidedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SaleWhereInput
 }
 
@@ -1861,6 +2037,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   manager?: boolean | Prisma.User$managerArgs<ExtArgs>
   reports?: boolean | Prisma.User$reportsArgs<ExtArgs>
   salesCreated?: boolean | Prisma.User$salesCreatedArgs<ExtArgs>
+  salesVoided?: boolean | Prisma.User$salesVoidedArgs<ExtArgs>
   incentivesOwned?: boolean | Prisma.User$incentivesOwnedArgs<ExtArgs>
   incentivesSubmitted?: boolean | Prisma.User$incentivesSubmittedArgs<ExtArgs>
   incentivesToReview?: boolean | Prisma.User$incentivesToReviewArgs<ExtArgs>
@@ -1917,6 +2094,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   manager?: boolean | Prisma.User$managerArgs<ExtArgs>
   reports?: boolean | Prisma.User$reportsArgs<ExtArgs>
   salesCreated?: boolean | Prisma.User$salesCreatedArgs<ExtArgs>
+  salesVoided?: boolean | Prisma.User$salesVoidedArgs<ExtArgs>
   incentivesOwned?: boolean | Prisma.User$incentivesOwnedArgs<ExtArgs>
   incentivesSubmitted?: boolean | Prisma.User$incentivesSubmittedArgs<ExtArgs>
   incentivesToReview?: boolean | Prisma.User$incentivesToReviewArgs<ExtArgs>
@@ -1939,6 +2117,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     manager: Prisma.$UserPayload<ExtArgs> | null
     reports: Prisma.$UserPayload<ExtArgs>[]
     salesCreated: Prisma.$SalePayload<ExtArgs>[]
+    salesVoided: Prisma.$SalePayload<ExtArgs>[]
     incentivesOwned: Prisma.$IncentivePayload<ExtArgs>[]
     incentivesSubmitted: Prisma.$IncentivePayload<ExtArgs>[]
     incentivesToReview: Prisma.$IncentivePayload<ExtArgs>[]
@@ -2355,6 +2534,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   manager<T extends Prisma.User$managerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$managerArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reports<T extends Prisma.User$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   salesCreated<T extends Prisma.User$salesCreatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$salesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  salesVoided<T extends Prisma.User$salesVoidedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$salesVoidedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incentivesOwned<T extends Prisma.User$incentivesOwnedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$incentivesOwnedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncentivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incentivesSubmitted<T extends Prisma.User$incentivesSubmittedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$incentivesSubmittedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncentivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incentivesToReview<T extends Prisma.User$incentivesToReviewArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$incentivesToReviewArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncentivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2843,6 +3023,30 @@ export type User$reportsArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
  * User.salesCreated
  */
 export type User$salesCreatedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sale
+   */
+  select?: Prisma.SaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sale
+   */
+  omit?: Prisma.SaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleInclude<ExtArgs> | null
+  where?: Prisma.SaleWhereInput
+  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
+  cursor?: Prisma.SaleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+}
+
+/**
+ * User.salesVoided
+ */
+export type User$salesVoidedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Sale
    */

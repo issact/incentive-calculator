@@ -108,6 +108,9 @@ export const SaleScalarFieldEnum = {
   customerPhone: 'customerPhone',
   brokerChannel: 'brokerChannel',
   createdById: 'createdById',
+  voidedAt: 'voidedAt',
+  voidedById: 'voidedById',
+  voidReason: 'voidReason',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
