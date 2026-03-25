@@ -82,7 +82,12 @@ export async function getIncentiveReport(
     AND: [
       baseWhere,
       { beneficiaryUserId: user.id },
-      ...(!query.includeVoided ? [{ sale: { voidedAt: null } }] : []),
+      {
+        OR: [
+          { sale: { voidedAt: null } },
+          { status: "PAID" }
+        ]
+      },
       {
         status: {
           in: ["CLAIMABLE", "CLAIM_REQUESTED", "PAID"]
