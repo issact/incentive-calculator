@@ -7,10 +7,7 @@ import ExportCSVButton from "./ExportCSV"
 import type { Incentive, PaginationResponse } from "@/types/api.types"
 import Skeleton from "@/components/ui/Skeleton"
 
-type QueryParams = {
-    page: number
-    limit: number
-}
+type QueryParams = Record<string, string | number | boolean | undefined>
 
 export default function ExportWrapper({ queryParams }: { queryParams: QueryParams }) {
     const query = buildQuery(queryParams)

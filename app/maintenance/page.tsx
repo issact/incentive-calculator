@@ -6,10 +6,10 @@ export default function MaintenancePage() {
       <div className="w-full rounded-xl border border-border bg-surface p-6">
         <h1 className="text-xl font-semibold">Service unavailable</h1>
         <p className="mt-2 text-sm text-muted">
-          The backend is not reachable right now, Please try again in a moment.
+          The server is not reachable right now, Please try again in a moment.
         </p>
 
-        <div className="mt-5 flex gap-3">
+        <div className="mt-5">
           <ReloadPageButton />
         </div>
       </div>

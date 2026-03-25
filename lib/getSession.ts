@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 import type { User } from "@/types/api.types"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL!
+const API_URL = process.env.API_URL!
 
 export type Session = {
     authenticated: true
@@ -20,6 +20,11 @@ export async function getSession(): Promise<Session | null> {
     })
 
     if (res.status === 401) {
+        return null
+    }
+
+    if (!res.ok) {
+        // Treat backend errors as "no session" to avoid redirect loops on /login.
         return null
     }
 

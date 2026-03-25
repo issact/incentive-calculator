@@ -27,12 +27,10 @@ export default function ReloadPageButton() {
         <button
             onClick={handleRetry}
             disabled={loading}
-            className={`px-4 py-2 rounded-md text-white transition cursor-pointer
+            className={`w-[11ch] rounded-md text-white transition cursor-pointer
                 ${loading
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-primary hover:opacity-90"
-                }`}
-        >
+                    : "bg-primary hover:opacity-90"}`} >
             {loading ? "Retrying..." : "Retry"}
         </button>
     )

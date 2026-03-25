@@ -30,7 +30,6 @@ export default function LogoutButton() {
             })
         } finally {
             router.push("/login")
-            router.refresh()
         }
     }
 

@@ -31,9 +31,9 @@ export default function IncentiveCharts({ data }: { data: Incentive[] }) {
 
   return (
 
-    <div className="w-full" style={{ height: 320 }}>
+    <div className="w-full h-75 min-h-75">
 
-      <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+      <ResponsiveContainer width="100%" height="100%">
 
         <LineChart data={chartData}>
 

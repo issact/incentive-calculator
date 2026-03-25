@@ -1,4 +1,4 @@
-import { navigation } from "@/lib/navigation"
+import { getNavigation } from "@/lib/navigation"
 import { getSession } from "@/lib/getSession"
 import SidebarNav from "./SidebarNav"
 
@@ -8,9 +8,7 @@ export default async function Sidebar() {
     const session = await getSession()
     const role = session?.user.role
 
-    const items = role
-        ? navigation.filter((item) => item.roles.includes(role))
-        : []
+    const items = role ? getNavigation(role) : []
 
     return (
         <aside className="w-64 border-r border-border bg-foreground text-background">

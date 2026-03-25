@@ -38,8 +38,11 @@ export type Sale = {
     id: string
     saleCode: string
     saleDate: string
+    bookingDate?: string | null
+    closeDate?: string | null
     projectName: string
     propertyType: "APARTMENT" | "VILLA" | "PLOT" | "COMMERCIAL"
+    unitNumber?: string | null
     city: string
     state: string
     saleValue: string | number
@@ -47,6 +50,12 @@ export type Sale = {
     customerPhone?: string | null
     brokerChannel?: "DIRECT" | "PARTNER" | "BROKER" | null
     notes?: string | null
+    voidedAt?: string | null
+    voidReason?: string | null
+    voidedBy?: Pick<User, "id" | "name" | "email" | "role"> | null
+    createdAt?: string
+    updatedAt?: string
+    createdBy?: Pick<User, "id" | "name" | "email" | "role">
     incentives: {
         level: string;
         status: IncentiveStatus
@@ -112,8 +121,6 @@ export type Incentive = {
     saleValue: number
 
     beneficiaryUser: Pick<User, "id" | "name" | "email" | "role">
-
-
 }
 
 export type IncentiveDetail = {

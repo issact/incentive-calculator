@@ -1,63 +1,17 @@
 import { UserRole } from "@/types/api.types"
+import { ROUTES } from "./rbacRoutes"
 
 export type NavItem = {
     label: string
     href: string
-    roles: UserRole[]
 }
 
-export const navigation: NavItem[] = [
-
-    {
-        label: "Dashboard",
-        href: "/dashboard",
-        roles: ["SALES", "TEAM_LEAD", "MANAGER", "OWNER_FINANCE"]
-    },
-
-    {
-        label: "Create Sale",
-        href: "/sales/new",
-        roles: ["SALES"]
-    },
-
-    {
-        label: "My Incentives",
-        href: "/incentives/my",
-        roles: ["SALES", "TEAM_LEAD", "MANAGER", "OWNER_FINANCE"]
-    },
-
-    {
-        label: "Review Incentives",
-        href: "/incentives/review",
-        roles: ["TEAM_LEAD", "MANAGER", "OWNER_FINANCE"]
-    },
-
-    {
-        label: "Reports",
-        href: "/reports/incentives",
-        roles: ["SALES", "TEAM_LEAD", "MANAGER", "OWNER_FINANCE"]
-    },
-    {
-        label: "Payments",
-        href: "/payments",
-        roles: ["OWNER_FINANCE"]
-    },
-    {
-        label: "Users",
-        href: "/admin/users",
-        roles: ["ADMIN"]
-    },
-
-    {
-        label: "Rules",
-        href: "/admin/rules",
-        roles: ["ADMIN"]
-    },
-
-    {
-        label: "Profile",
-        href: "/profile",
-        roles: ["SALES", "TEAM_LEAD", "MANAGER", "OWNER_FINANCE", "ADMIN"]
-    }
-
-]
+export function getNavigation(role: UserRole) {
+    return ROUTES
+        .filter(r => r.nav && r.label && r.roles.includes(role))
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map(r => ({
+            label: r.label!,
+            href: r.path
+        }))
+}
