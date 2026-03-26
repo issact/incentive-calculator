@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SALES
+  TEAM_LEAD
+  MANAGER
+  OWNER_FINANCE
+  ADMIN
+}
+
+enum IncentiveStatus {
+  PENDING_REVIEW
+  ON_HOLD
+  CLAIMABLE
+  CLAIM_REQUESTED
+  PAID
+}
+
+enum IncentiveLevel {
+  L1
+  L2
+  L3
+  L4
+}
+
+enum IncentiveRuleType {
+  PERCENTAGE
+}
+
+enum PropertyType {
+  APARTMENT
+  VILLA
+  PLOT
+  COMMERCIAL
+}
+
+enum BrokerChannel {
+  DIRECT
+  PARTNER
+  BROKER
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole
+
+  managerId String?
+  manager   User?   @relation("UserHierarchy", fields: [managerId], references: [id])
+  reports   User[]  @relation("UserHierarchy")
+
+  avatarUrl String?
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  salesCreated Sale[] @relation("SalesCreated")
+  salesVoided  Sale[] @relation("SalesVoided")
+
+  incentivesOwned     Incentive[] @relation("IncentiveBeneficiary")
+  incentivesSubmitted Incentive[] @relation("IncentiveSubmittedBy")
+  incentivesToReview  Incentive[] @relation("IncentiveReviewer")
+
+  holdsPlaced    Incentive[] @relation("IncentiveHeldBy")
+  approvalsGiven Incentive[] @relation("IncentiveApprovedBy")
+
+  events IncentiveEvent[]
+  kpis   EmployeeKPI[]
+
+  @@index([managerId])
+  @@index([role])
+}
+
+model Sale {
+  id          String    @id @default(cuid())
+  saleCode    String    @unique
+  saleDate    DateTime
+  bookingDate DateTime?
+  closeDate   DateTime?
+
+  projectName  String
+  propertyType PropertyType
+  unitNumber   String?
+
+  city  String
+  state String
+
+  saleValue BigInt
+
+  customerName  String
+  customerPhone String?
+
+  brokerChannel BrokerChannel?
+
+  createdById String
+  createdBy   User   @relation("SalesCreated", fields: [createdById], references: [id])
+
+  voidedAt    DateTime?
+  voidedById  String?
+  voidedBy    User?     @relation("SalesVoided", fields: [voidedById], references: [id])
+  voidReason  String?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  incentives         Incentive[]
+  valuationSnapshots ValuationSnapshot[]
+
+  @@index([createdById])
+  @@index([projectName])
+  @@index([saleDate])
+  @@index([voidedAt])
+}
+
+model IncentiveRule {
+  id String @id @default(cuid())
+
+  level IncentiveLevel
+  name  String
+
+  ruleType    IncentiveRuleType
+  ratePercent Decimal           @db.Decimal(5, 2)
+
+  capValue BigInt?
+
+  effectiveFrom DateTime
+  effectiveTo   DateTime?
+
+  version  Int
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  incentives Incentive[]
+
+  @@index([level, isActive])
+}
+
+model Incentive {
+  id String @id @default(cuid())
+
+  saleId String
+  sale   Sale   @relation(fields: [saleId], references: [id])
+
+  level IncentiveLevel
+
+  beneficiaryUserId String
+  beneficiaryUser   User   @relation("IncentiveBeneficiary", fields: [beneficiaryUserId], references: [id])
+
+  submittedById String
+  submittedBy   User   @relation("IncentiveSubmittedBy", fields: [submittedById], references: [id])
+
+  reviewerUserId String
+  reviewer       User   @relation("IncentiveReviewer", fields: [reviewerUserId], references: [id])
+
+  ruleId String
+  rule   IncentiveRule @relation(fields: [ruleId], references: [id])
+
+  /**
+   * Calculation fields
+   */
+
+  saleValue   BigInt
+  rulePercent Decimal @db.Decimal(5, 2)
+
+  baseAmount       BigInt
+  performanceScore Decimal? @db.Decimal(5, 2)
+  scoreMultiplier  Decimal? @db.Decimal(5, 2)
+
+  adjustedAmount BigInt?
+
+  manualOverrideAmount BigInt?
+  manualOverrideReason String?
+
+  finalAmount BigInt
+
+  status IncentiveStatus @default(PENDING_REVIEW)
+
+  holdReason String?
+
+  heldById String?
+  heldBy   User?   @relation("IncentiveHeldBy", fields: [heldById], references: [id])
+
+  approvedById String?
+  approvedBy   User?   @relation("IncentiveApprovedBy", fields: [approvedById], references: [id])
+
+  approvedAt DateTime?
+
+  // Claim info
+  claimRequestedAt  DateTime?
+  bankAccountNumber String?
+  bankIfscCode      String?
+  bankAccountName   String?
+  upiId             String?
+
+  claimNote String?
+  paidAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events IncentiveEvent[]
+
+  @@unique([saleId, level])
+  @@index([saleId])
+  @@index([reviewerUserId, status])
+  @@index([beneficiaryUserId, status])
+}
+
+model IncentiveEvent {
+  id String @id @default(cuid())
+
+  incentiveId String
+  incentive   Incentive @relation(fields: [incentiveId], references: [id])
+
+  actorUserId String
+  actorUser   User   @relation(fields: [actorUserId], references: [id])
+
+  fromStatus IncentiveStatus?
+  toStatus   IncentiveStatus
+
+  reason   String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([incentiveId, createdAt])
+}
+
+model ValuationSnapshot {
+  id String @id @default(cuid())
+
+  saleId String
+  sale   Sale   @relation(fields: [saleId], references: [id])
+
+  marketValue   BigInt
+  assessedValue BigInt?
+
+  valuationDate DateTime
+  source        String
+
+  remarks String?
+
+  createdAt DateTime @default(now())
+
+  @@index([saleId, valuationDate])
+}
+
+model EmployeeKPI {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  periodMonth String
+
+  dealsClosed Int
+
+  totalSalesValue BigInt
+  avgTicketValue  BigInt
+
+  conversionRate Decimal? @db.Decimal(5, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, periodMonth])
+  @@index([periodMonth])
+}
