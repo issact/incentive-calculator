@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Incentive Calculator Monorepo
 
-First, run the development server:
+This repository contains:
+
+- `incentive-calc-front` → Next.js frontend
+- `incentive-calc-back` → Node.js backend (API + Prisma)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install dependencies
 
 ```bash
+cd incentive-calc-front && npm install
+cd ../incentive-calc-back && npm install
+````
+
+---
+
+### 2. Run backend
+
+```bash
+cd incentive-calc-back
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run frontend
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+cd incentive-calc-front
+npm run dev
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🌐 Default Ports
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Frontend → [http://localhost:3000](http://localhost:3000)
+* Backend → [http://localhost:5000](http://localhost:5000) (or your config)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ⚙️ Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Each project has its own `.env` file:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* `incentive-calc-front/.env`
+* `incentive-calc-back/.env`
+
+---
+
+## 🧠 Notes
+
+* This is a simple monorepo (no turborepo/workspaces yet)
+* Frontend and backend are independent apps
+

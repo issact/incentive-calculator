@@ -1,8 +1,0 @@
-{
-  "name": "incentive-calculator",
-  "private": true,
-  "workspaces": [
-    "incentive-calc-front",
-    "incentive-calc-back"
-  ]
-}
