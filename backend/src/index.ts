@@ -1,4 +1,7 @@
-import "dotenv/config"
+import dotenv from "dotenv"
+
+dotenv.config({ override: true })
+
 import app from "./app"
 
 const PORT = process.env.PORT || 5000;

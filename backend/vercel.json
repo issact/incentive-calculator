@@ -1,6 +1,11 @@
 {
-    "version": 2,
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/api" }
-    ]
-  }
+  "version": 2,
+  "env": {
+    "NODE_ENV": "production",
+    "CORS_ORIGINS": "https://incentive-calculator-frontend.vercel.app",
+    "APP_BASE_URL": "https://incentive-calculator-frontend.vercel.app"
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api" }
+  ]
+}
