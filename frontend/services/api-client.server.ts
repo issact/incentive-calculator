@@ -1,7 +1,8 @@
 import { cookies } from "next/headers"
 import { ApiError } from "./api-error"
+import { getServerApiUrl } from "@/lib/api-base-url"
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+const API_URL = getServerApiUrl()
 
 async function parseError(res: Response) {
   const contentType = res.headers.get("content-type") ?? ""
@@ -33,7 +34,7 @@ export async function apiFetchServer<T>(
   const cookieStore = await cookies()
 
   if (!API_URL) {
-    throw new ApiError({ message: "Missing NEXT_PUBLIC_API_URL", status: 500, code: "CONFIG_ERROR" })
+    throw new ApiError({ message: "Missing API URL configuration", status: 500, code: "CONFIG_ERROR" })
   }
 
   let res: Response

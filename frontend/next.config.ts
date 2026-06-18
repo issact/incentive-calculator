@@ -1,13 +1,17 @@
 import type { NextConfig } from "next";
 
-const productionApiUrl =
-  "https://incentive-calculator-backend.vercel.app/api/v1";
+const isProd = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_API_URL:
-      process.env.NEXT_PUBLIC_API_URL ?? productionApiUrl,
-    API_URL: process.env.API_URL ?? productionApiUrl,
+      process.env.NEXT_PUBLIC_API_URL ??
+      (isProd ? "/api/v1" : "http://localhost:5000/api/v1"),
+    API_URL:
+      process.env.API_URL ??
+      (isProd
+        ? "https://incentive-calculator-frontend.vercel.app/api/v1"
+        : "http://localhost:5000/api/v1"),
   },
 };
 

@@ -9,7 +9,8 @@ const router = Router()
 
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = loginSchema.parse(req.body)
+        const { email: rawEmail, password } = loginSchema.parse(req.body)
+        const email = rawEmail.trim().toLowerCase()
 
         const user = await prisma.user.findUnique({
             where: { email }
@@ -47,7 +48,8 @@ router.post("/login", async (req, res) => {
         })
 
         res.json({
-            message: "Login successful"
+            message: "Login successful",
+            token,
         })
     } catch (err) {
         return sendError(res, err, { status: 500, message: "Login failed" }, { forceFallbackMessageOn5xx: true })

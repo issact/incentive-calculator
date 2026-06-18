@@ -6,7 +6,7 @@ import { PrismaClient } from "../src/generated/prisma/client"
 const databaseUrl = process.env.DATABASE_URL
 if (!databaseUrl) throw new Error("DATABASE_URL is required")
 
-const adminEmail = process.env.ADMIN_EMAIL ?? "admin@email.com"
+const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com"
 const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123"
 const adminName = process.env.ADMIN_NAME ?? "Admin"
 

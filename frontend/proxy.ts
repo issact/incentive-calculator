@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import type { User, UserRole } from "@/types/api.types"
 import { ROUTES } from "./lib/rbacRoutes"
+import { getServerApiUrl } from "@/lib/api-base-url"
 
-const API_URL = process.env.API_URL!
+const API_URL = getServerApiUrl()
 
 function redirect(req: NextRequest, path: string) {
     return NextResponse.redirect(new URL(path, req.url))

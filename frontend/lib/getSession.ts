@@ -1,7 +1,8 @@
 import { cookies } from "next/headers"
 import type { User } from "@/types/api.types"
+import { getServerApiUrl } from "@/lib/api-base-url"
 
-const API_URL = process.env.API_URL!
+const API_URL = getServerApiUrl()
 
 export type Session = {
     authenticated: true
