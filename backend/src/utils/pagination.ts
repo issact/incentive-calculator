@@ -14,6 +14,7 @@ export type IncentiveListQuery = {
     userId?: string
     fromDate?: Date
     toDate?: Date
+    includeVoided?: boolean
 }
 
 export type SaleListQuery = {
@@ -135,6 +136,9 @@ export function parseIncentiveListQuery(rawQuery: unknown): IncentiveListQuery {
         throw new Error("fromDate must be before toDate")
     }
 
+    const includeVoidedRaw = firstQueryString(query.includeVoided)
+    const includeVoided = parseBoolParam(includeVoidedRaw)
+
     return {
         page,
         limit,
@@ -147,6 +151,7 @@ export function parseIncentiveListQuery(rawQuery: unknown): IncentiveListQuery {
         ...(userId ? { userId } : {}),
         ...(fromDate ? { fromDate } : {}),
         ...(toDate ? { toDate } : {}),
+        ...(includeVoided !== undefined ? { includeVoided } : {}),
     }
 }
 
