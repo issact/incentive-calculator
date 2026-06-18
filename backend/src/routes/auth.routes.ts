@@ -35,15 +35,11 @@ router.post("/login", async (req, res) => {
         })
 
         const isProd = process.env.NODE_ENV === "production"
+        const cookieDomain = process.env.COOKIE_DOMAIN?.trim()
 
         res.cookie("auth_token", token, {
             httpOnly: true,
-            // secure: isProd,
-            // Cross-site cookies for Vercel(frontend) -> Render(backend) require SameSite=None + Secure.
-            // sameSite: isProd ? "none" : "lax",
-            // secure: true,
-            // sameSite: "lax",
-            domain: ".tomatoweb.site",
+            ...(cookieDomain ? { domain: cookieDomain } : {}),
             secure: isProd,
             sameSite: isProd ? "none" : "lax",
             path: "/",
@@ -99,11 +95,11 @@ router.get("/me", requireAuth, async (req, res) => {
 
 router.post("/logout", (req, res) => {
     const isProd = process.env.NODE_ENV === "production"
+    const cookieDomain = process.env.COOKIE_DOMAIN?.trim()
+
     res.clearCookie("auth_token", {
         httpOnly: true,
-        // secure: true,
-        // sameSite: "lax",
-        domain: ".tomatoweb.site",
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
         secure: isProd,
         sameSite: isProd ? "none" : "lax",
         path: "/",
